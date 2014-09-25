@@ -1,8 +1,8 @@
 #include "two.h"
 
 /*! \file two.c
-* \author JM Moreau
-* \date 2004
+* \author JM Moreau, A Chemier, R Lhomme
+* \date 2004 - 2014
 */
 
 /*! Generation d'un nombre aleatoire entre deux bornes.
@@ -23,6 +23,11 @@ void winInit()
 	gluOrtho2D(minX, maxX, minY, maxY);
 }
 
+/*! Calcul le determinant de la matrice 3*3 abcdefghi
+* \arg a, b, c la premiere ligne de la matrice
+* \arg c, d, e la deuxieme ligne de la matrice
+* \arg g, h, i la troisieme ligne de la matrice
+*/
 double determinant(double a, double b, double c,
 				double d, double e, double f,
 				double g, double h, double i)
@@ -30,6 +35,9 @@ double determinant(double a, double b, double c,
 	return (a * e * i + d * h * c + g * b * f ) - ( g * e * c + a * h * f + d * b * i);
 }
 
+/*! Calcul l'orientation polaire des Vertex A, B et C
+* \arg A, B et C les trois Vertices dont on veut calculer l'angle
+*/
 Orientation orientationPolaire(vertex A, vertex B, vertex C)
 {
 	double det = determinant(1,1,1,
@@ -61,6 +69,28 @@ void selectPoints (void)
 	}
 }
 
+/*! Recupere les coordonnées d'un polygone stockées dans un fichier
+*
+*/
+void lireFichier(const char *fichier)
+{
+	FILE *f;
+	if((f = fopen(fichier,"r")) != NULL)
+	{
+		int i;
+		fscanf(f,"%d",&nbFic);
+		L = (vertex *) malloc(sizeof(vertex)*nbFic);
+		for(i = 0; i< nbFic; i++)
+		{
+			fscanf(f,"%lf %lf",&L[i].coords[0], &L[i].coords[1]);
+		}
+		fclose(f);
+	}
+}
+
+/*! Calcul la position des vertices par rapport au triangle
+* 
+*/
 void positionPointsParRapportTriangle(void)
 {
 	int n = nbPoints;
@@ -121,7 +151,6 @@ void display(void)
 	glFlush();
 }
 
-
 /*! \brief Fonction principale: on peut choisir le nombre de points
 * en utilisant l'option "-nX" où X est un entier strictement
 * positif.
@@ -136,22 +165,31 @@ void display(void)
 int main(int argc, char **argv)  
 {  
 	int c;
-
+	
 	opterr = 0;
-	while ((c = getopt(argc, argv, "n:")) != EOF)
+	while ((c = getopt(argc, argv, "n:f:?h")) != EOF)
 	{
 		switch (c)
 		{
-			case 'n': if ((sscanf(optarg, "%d", &nbPoints) != 1) || nbPoints <= 0)
-			nbPoints = 50;
+			case 'n': 
+				if ((sscanf(optarg, "%d", &nbPoints) != 1) || nbPoints <= 0)
+					nbPoints = 50;
 				break;
-			case '?': printf("use option -nX (no space), with 0 < X.\n");
+			case 'f': 
+				if ((sscanf(optarg, "%d", &nbPoints) != 1) || nbPoints <= 0){
+					nbPoints = 50;
+				}
+				lireFichier("coord.txt");
+				break;
+			case 'h': 
+			case '?': 
+				printf("use option -nX or -fX (no space), with 0 < X.\n");
+				return EXIT_SUCCESS;  
 				break;
 			default : printf("Shouldn't be here, really...\n");
 				break;
 		}
 	}
-
 	assert(nbPoints > 0);
 	T = (vertex *) malloc(sizeof(vertex)*nbPoints);
 	assert(T != NULL);
@@ -160,7 +198,7 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);  
 	glutInitWindowPosition(5,5);  
 	glutInitWindowSize(300,300);  
-	glutCreateWindow("My first OpenGL window...");  
+	glutCreateWindow("Triangle");  
 
 	winInit();
 	selectPoints();

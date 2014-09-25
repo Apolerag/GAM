@@ -1,8 +1,8 @@
 #ifndef __TWO_H__
 #define TWO_H__
 /*! \file two.h
-* \author JM Moreau
-* \date 2004
+* \author JM Moreau, A Chemier, R Lhomme
+* \date 2004 - 2014
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,14 +20,15 @@ extern int opterr;
 /*! Dimension de l'espace */
 #define DIM 2
 
-
+/*! enum pour representer l'orientation de trois points*/
 typedef enum
 {
-	GAUCHE = -1,
-	ALIGNES = 0,
+	GAUCHE = -1, 
+	ALIGNES = 0, 
 	DROITE = 1
 }Orientation;
 
+/*! enum pour la position du point par rapport au triangle*/
 typedef enum
 {
 	DEDANS = -1,
@@ -58,8 +59,11 @@ int nbPoints = 50;
 /*! Tableau gobal des sommets */
 vertex *T = NULL;
 
+/*! Nombre de vertex dans le fichier lu*/
+
+int nbFic = 0;
+
+/*! Liste des vertices du fichier*/
+vertex *L = NULL;
 
 #endif
-
-
-
