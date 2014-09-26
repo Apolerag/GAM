@@ -88,6 +88,25 @@ void lireFichier(const char *fichier)
 	}
 }
 
+/* Retourne l'indice du min lexicographique des points du fichier dans le tableau */
+int minLexicographique()
+{
+	vertex * minL = &L[0];
+	int indice = 0 ;
+	
+	int i ;
+	for(i = 1; i < nbFic; i++) 
+	{
+		if( (L[i].coords[0] < minL->coords[0]) ||
+			((L[i].coords[0] == minL->coords[0]) && (L[i].coords[1] < minL->coords[1])) )
+		{
+			minL = &L[i]; 
+			indice = i ;
+		}
+	}
+	return indice ;
+}
+
 /*! Calcul la position des vertices par rapport au triangle
 * 
 */
@@ -110,6 +129,18 @@ void positionPointsParRapportTriangle(void)
 	T[0].position = T[1].position = T[2].position = TRIANGLE ;
 }
 
+/*! Determine si le polygone tourne dans le sens horaire ou trigonometrique
+*
+*/
+Sens sensPolygone() 
+{
+	int minLex = minLexicographique();
+	Orientation o = orientationPolaire(L[minLex - 1], L[minLex], L[minLex + 1]);
+	if(o == DROITE)
+		return HORAIRE ;
+	else
+		return TRIGONOMETRIQUE ;
+}
 
 /*! Affichage.
 *\warning Particularite: "callback function", ie pas d'argument transmis... Tout en global, yeurk!
@@ -176,10 +207,8 @@ int main(int argc, char **argv)
 					nbPoints = 50;
 				break;
 			case 'f': 
-				if ((sscanf(optarg, "%d", &nbPoints) != 1) || nbPoints <= 0){
+				if ((sscanf(optarg, "%d", &nbPoints) != 1) || nbPoints <= 0)
 					nbPoints = 50;
-				}
-				lireFichier("coord.txt");
 				break;
 			case 'h': 
 			case '?': 
@@ -201,10 +230,11 @@ int main(int argc, char **argv)
 	glutCreateWindow("Triangle");  
 
 	winInit();
-	selectPoints();
-	positionPointsParRapportTriangle();
+	
+	lireFichier("coord.txt");
+	printf("%d\n",sensPolygone());
 
-	glutDisplayFunc(display);  
+	glutDisplayFunc(display);
 	glutMainLoop();  
 
 	return EXIT_SUCCESS;  

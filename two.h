@@ -37,12 +37,19 @@ typedef enum
 	TRIANGLE = 2
 } Position;
 
+typedef enum
+{
+  TRIGONOMETRIQUE = 0,
+  HORAIRE = 1
+} Sens;
+
 /*! Structure pour representer un point. */
 typedef struct
 {
 	double coords[DIM];
 	Position position;
 } vertex;
+
 
 /*! Tailles diverses du systemes de fenetrage .*/
 const double minX = 0,
