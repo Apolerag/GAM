@@ -28,7 +28,7 @@ typedef enum
 	DROITE = 1
 }Orientation;
 
-/*! enum pour la position du point par rapport au triangle*/
+/*! enum pour la position du point par rapport au triangle ou au polygone*/
 typedef enum
 {
 	DEDANS = -1,
@@ -49,6 +49,15 @@ typedef struct
 	double coords[DIM];
 	Position position;
 } vertex;
+
+/*! les coordonnees extremes des points du fichier*/
+typedef struct 
+{
+	double Xmin;
+	double Xmax;
+	double Ymin;
+	double Ymax;
+} rectangleEnglobant;
 
 
 /*! Tailles diverses du systemes de fenetrage .*/
@@ -72,5 +81,9 @@ int nbFic = 0;
 
 /*! Liste des vertices du fichier*/
 vertex *L = NULL;
+
+rectangleEnglobant r;
+	
+void rectangleEnglobantPolygone();
 
 #endif

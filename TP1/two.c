@@ -53,15 +53,17 @@ void selectPoints (void)
 {
 	int n = nbPoints;
 
+
+	rectangleEnglobantPolygone();
 	while (--n >= 0)
 	{
-		T[n].coords[0] = myRandom(minX+10, maxX-10);
-		T[n].coords[1] = myRandom(minY+10, maxY-10);
+		T[n].coords[0] = myRandom(minX + 10, maxX-10);
+		T[n].coords[1] = myRandom(minY + 10, maxY-10);
 	}
 	Orientation orient = orientationPolaire(T[0],T[1],T[2]);
 	if( orient == ALIGNES) 
 		selectPoints();
-	else if(orient == DROITE) // r�organisation des points dans l'ordre trigo
+	else if(orient == DROITE) // réorganisation des points dans l'ordre trigo
 	{
 		vertex tampon = T[1];
 		T[1] = T[2];
@@ -69,7 +71,7 @@ void selectPoints (void)
 	}
 }
 
-/*! Recupere les coordonn�es d'un polygone stock�es dans un fichier
+/*! Recupere les coordonnées d'un polygone stockées dans un fichier
 *
 */
 void lireFichier(const char *fichier)
@@ -88,7 +90,7 @@ void lireFichier(const char *fichier)
 	}
 }
 
-/* Retourne l'indice du min lexicographique des points du fichier dans le tableau */
+/*! Retourne l'indice du min lexicographique des points du fichier*/
 int minLexicographique()
 {
 	vertex * minL = &L[0];
@@ -98,13 +100,28 @@ int minLexicographique()
 	for(i = 1; i < nbFic; i++) 
 	{
 		if( (L[i].coords[0] < minL->coords[0]) ||
-			((L[i].coords[0] == minL->coords[0]) && (L[i].coords[1] < minL->coords[1])) )
+			((L[i].coords[0] == minL->coords[0]) && (L[i].coords[1] < minL->coords[1])))
 		{
 			minL = &L[i]; 
 			indice = i ;
 		}
 	}
 	return indice ;
+}
+
+/*! retourne le rectangle englobant minimums des points du fichier*/
+void rectangleEnglobantPolygone()
+{
+	r.Xmax = r.Xmin = L[0].coords[0];
+	r.Ymax = r.Ymin = L[0].coords[1];
+	int i;
+	for(i = 1; i < nbFic; i++)
+	{
+		if(r.Xmax < L[i].coords[0]) r.Xmax = L[i].coords[0];
+		if(r.Xmin > L[i].coords[0]) r.Xmin = L[i].coords[0];
+		if(r.Ymax < L[i].coords[1]) r.Ymax = L[i].coords[1];
+		if(r.Ymin > L[i].coords[1]) r.Ymin = L[i].coords[1];
+	}
 }
 
 /*! Calcul la position des vertices par rapport au triangle
@@ -119,7 +136,6 @@ void positionPointsParRapportTriangle(void)
 		Orientation O1 = orientationPolaire(T[0],T[1],T[n]) ;
 		Orientation O2 = orientationPolaire(T[1],T[2],T[n]) ;
 		Orientation O3 = orientationPolaire(T[2],T[0],T[n]) ;
-		
 		if(O1 == DROITE || O2 == DROITE || O3 == DROITE)
 			T[n].position = DEHORS; 
 		else if(O1 == ALIGNES || O2 == ALIGNES  || O3 == ALIGNES )
@@ -129,9 +145,81 @@ void positionPointsParRapportTriangle(void)
 	T[0].position = T[1].position = T[2].position = TRIANGLE ;
 }
 
-/*! Determine si le polygone tourne dans le sens horaire ou trigonometrique
-*
+/*! Calcul la position des vertices par rapport au polygone du fichier
+* 
 */
+void positionPointsParRapportPolygone(void)
+{
+	int n = nbPoints;
+	int i, nbChangement;
+	int imin = minLexicographique();
+	Orientation o;
+	double x,y; //coordonnées du points à controler
+	double a,b; //a,b les parametre de l'equation de la droite passant par les cotés du polygones, 
+	double c; //le point d'intersection entre la droite y= a*x+b et la demi-droite y = Xn sur [x; + INF]
+	rectangleEnglobantPolygone();
+	
+
+	while (--n >= 0)
+	{		
+
+		if((T[n].coords[0] < r.Xmin) || (T[n].coords[0] > r.Xmax) ||	
+			(T[n].coords[1] < r.Ymin) || (T[n].coords[1] > r.Ymax)) 
+			//si le point est à l'exterieur du rectangle englobant
+		{
+			T[n].position = DEHORS;
+		}
+		else
+		{
+			nbChangement = 0;
+			
+			i = minLexicographique();
+
+			y = T[n].coords[1];
+			x = T[n].coords[0];
+
+			//on récupere la position du point par rapport au premier points du polygone
+			if(L[i].coords[0] > x) o = GAUCHE;
+			else o = DROITE;
+
+			do
+			{
+				if( ( (L[i].coords[1] > y) && (L[(i+1)%nbFic].coords[1] < y) ) ||
+					( (L[i].coords[1] < y) && (L[(i+1)%nbFic].coords[1] > y) )  )
+					//si le polygone croise la demi droite
+					{
+
+					a = (L[i].coords[1] - L[(i+1)%nbFic].coords[1]) / (L[i].coords[0] - L[(i+1)%nbFic].coords[0]);
+					b = L[i].coords[1] - a * L[i].coords[0] ;
+					if(a != 0) 
+					{
+						c = (y - b) / a;
+						
+						//si le polygone croise la demi droite
+						if(c > x && o == DROITE)
+						{
+							nbChangement ++;
+							o = GAUCHE;
+						}
+						else if(c > x && o == GAUCHE)
+						{
+							nbChangement ++;
+							o = DROITE;
+						}
+					}
+				}
+				i++;
+				i %= nbFic;
+			}
+			while (i != imin);
+
+			if(nbChangement%2 == 0) T[n].position = DEHORS;
+			else T[n].position = DEDANS;
+		}
+	}
+}
+
+/*! Determine si le polygone tourne dans le sens horaire ou trigonometrique*/
 Sens sensPolygone() 
 {
 	int minLex = minLexicographique();
@@ -147,7 +235,11 @@ Sens sensPolygone()
 */
 void display(void)
 {
-	int n = nbPoints;
+	int n = nbFic;
+	int i = minLexicographique();
+	int pas;
+	if (sensPolygone() == TRIGONOMETRIQUE) pas = 1;
+	else pas = -1;
 
 	glColor3f(0.0, 0.0, 0.0); 
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -157,7 +249,15 @@ void display(void)
 
 	while (--n >= 0)
 	{
-		
+		glVertex2f(L[i].coords[0], L[i].coords[1]);
+		i += pas;
+		if(i< 0) i = nbFic -1;
+		if(i == nbFic) i = 0;
+	}
+
+	n = nbPoints;
+	while (--n >= 0)
+	{
 		switch(T[n].position)
 		{
 			case TRIANGLE :
@@ -177,13 +277,14 @@ void display(void)
 		}
 		glVertex2f(T[n].coords[0], T[n].coords[1]);
 	}
+
 	glEnd();
 
 	glFlush();
 }
 
 /*! \brief Fonction principale: on peut choisir le nombre de points
-* en utilisant l'option "-nX" o� X est un entier strictement
+* en utilisant l'option "-nX" où X est un entier strictement
 * positif.
 * \remark Mettre opterr a 0 equivaut a supprimer volontairement les messages d'erreur renvoyes par getopt 
 * lors de la lecture d'options non prevus sur la ligne de commande. Dans ces cas, l'erreur est traitee grace au
@@ -227,12 +328,13 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);  
 	glutInitWindowPosition(5,5);  
 	glutInitWindowSize(300,300);  
-	glutCreateWindow("Triangle");  
+	glutCreateWindow("fenetre");  
 
+	lireFichier("coord2.txt");
 	winInit();
-	
-	lireFichier("coord.txt");
-	printf("%d\n",sensPolygone());
+	selectPoints();
+	positionPointsParRapportPolygone();
+
 
 	glutDisplayFunc(display);
 	glutMainLoop();  
