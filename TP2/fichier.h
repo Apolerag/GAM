@@ -16,6 +16,6 @@
 void lireFichier(const char *fichier, polygone *P);
 
 /*! ecrit un fichier contenant une liste de point formant un polygone*/
-void ecrireFichier(const char *fichier, polygone *P);
+void ecrireFichier(const char *fichier, const polygone *P);
 
 #endif

@@ -1,4 +1,4 @@
-CFLAGS = -c -g -Werror
+CFLAGS = -c -g -Werror -pedantic
 GL_INCLUDE    = -I/usr/include/GL
 GL_LIBDIR    = -L. -L/usr/X11R6/lib
 GL_LIBRARIES = -lglut -lGL -lm -lGLU -lXmu -lXext -lXi -lX11

@@ -7,6 +7,7 @@
 #define _FENETRE_H
 
 #include "polygone.h"
+#include "fichier.h"
 
 #include <unistd.h>  
 #include <GL/glut.h> 
@@ -27,11 +28,6 @@ fenetre f;
 
 /*! le polygone à dessiner */
 polygone P;
-
-/*!
-* donne une valeur au polygone
-*/
-void assigneValeurPolygone(polygone *m);
 
 /*! modifie la dimension de la fenetre
 * \arg X_min, X_max, Y_min, Y_max, margin les nouvelles dimensions de la fenetre
@@ -74,6 +70,6 @@ void displayPolygone();
 /*!
 	récupere les coordonnées du point cliqué
 */
-void coordonnesPoint(int button, int state, int x, int y);
+void coordonnesPoint(const int button, const int state, const int x, const int y);
 
 #endif

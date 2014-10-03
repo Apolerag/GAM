@@ -54,9 +54,10 @@ void displayPolygone()
 
 	glBegin(GL_LINES);
 
-	while (--i >= 0)
+	while (--i > 0)
 	{
 		glVertex2f(P.p[i].coords[0], P.p[i].coords[1]);
+		glVertex2f(P.p[i+1].coords[0], P.p[i+1].coords[1]);
 	}
 
 	glEnd();
@@ -89,7 +90,7 @@ void displayPoint()
 	{
 		glBegin(GL_POINTS);
 
-		glVertex2f(P.p[0].coords[0], P.p[0].coords[1]);
+		glVertex2f(P.p[0].coords[0], f.maxY - P.p[0].coords[1]);
 
 		glEnd();
 	}
@@ -98,8 +99,8 @@ void displayPoint()
 		glBegin(GL_LINES);
 		for(i = 0; i < P.nbOccupe - 1; i++)
 		{
-			glVertex2f(P.p[i].coords[0], P.p[i].coords[1]);
-			glVertex2f(P.p[i+1].coords[0], P.p[i+1].coords[1]);
+			glVertex2f(P.p[i].coords[0], f.maxY - P.p[i].coords[1]);
+			glVertex2f(P.p[i+1].coords[0], f.maxY - P.p[i+1].coords[1]);
 		}
 
 		glEnd();
@@ -109,7 +110,7 @@ void displayPoint()
 }
 
 
-void coordonnesPoint(int button, int state, int x, int y)
+void coordonnesPoint(const int button, const int state, const int x, const int y)
 {
 
 	switch (button)
@@ -122,6 +123,8 @@ void coordonnesPoint(int button, int state, int x, int y)
 				v.coords[1] = y;
 				ajoutePoint(&P,v);
 				displayPoint();
+				printf("%d %d\n",x,y );
+				ecrireFichier("res.txt" , &P);
 			}
 		break;
 	}

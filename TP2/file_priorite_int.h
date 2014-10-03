@@ -10,9 +10,9 @@
 #include <stdio.h>
 
 typedef struct{
-   int *file; 			/*gestion dynamique de la mémoir occupée*/
-   unsigned int nbElem;	/*nombre d'éléments de la file*/
-   unsigned int nbMax;	/*nombre max d'éléments de la file*/
+   int *file; 			/*!gestion dynamique de la mémoir occupée*/
+   unsigned int nbElem;	/*!nombre d'éléments de la file*/
+   unsigned int nbMax;	/*!nombre max d'éléments de la file*/
 } file;
 
 /*! initialise la file par defaut*/

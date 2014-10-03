@@ -17,16 +17,18 @@ void lireFichier(const char *fichier, polygone *P)
 		for(i = 0; i< P->nbVertex; i++)
 		{
 			fscanf(f,"%lf, %lf",&P->p[i].coords[0], &P->p[i].coords[1]);
-		}
+		}		
 		fclose(f);
 	}
 }
 
-void ecrireFichier(const char *fichier, polygone *P)
+void ecrireFichier(const char *fichier, const polygone *P)
 {
+	printf("ecrireFichier\n");
 	FILE *f;
 	if((f = fopen(fichier,"w")) != NULL)
 	{
+		printf("ecriture\n");
 		int i;
 
 		fprintf(f,"%u\n",P->nbOccupe);

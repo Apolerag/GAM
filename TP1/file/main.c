@@ -4,28 +4,28 @@
 int main()
 {
 	file f;
-	initialiser_file_defaut_int(&f);
+	initialiserFileDefautInt(&f);
 
-	inserer_file_int(&f, 1);
-	afficher_file_int(&f);
-	inserer_file_int(&f, 2);
-	afficher_file_int(&f);
-	inserer_file_int(&f, 3);	
-	afficher_file_int(&f);
-	inserer_file_int(&f, 4);
-	afficher_file_int(&f);
-	inserer_file_int(&f, 5);
-	afficher_file_int(&f);
-	inserer_file_int(&f, 6);
-	afficher_file_int(&f);
+	insererFileInt(&f, 1);
+	afficherFileInt(&f);
+	insererFileInt(&f, 2);
+	afficherFileInt(&f);
+	insererFileInt(&f, 3);	
+	afficherFileInt(&f);
+	insererFileInt(&f, 4);
+	afficherFileInt(&f);
+	insererFileInt(&f, 5);
+	afficherFileInt(&f);
+	insererFileInt(&f, 6);
+	afficherFileInt(&f);
 
-	printf("%d\n", recupere_element(&f));
-	afficher_file_int(&f);
-	printf("%d\n", recupere_element(&f));
-	afficher_file_int(&f);
-	printf("%d\n", recupere_element(&f));
-	afficher_file_int(&f);
+	printf("%d\n", recupereElement(&f));
+	afficherFileInt(&f);
+	printf("%d\n", recupereElement(&f));
+	afficherFileInt(&f);
+	printf("%d\n", recupereElement(&f));
+	afficherFileInt(&f);
 	
-	free_file_int(&f);
+	freeFileInt(&f);
 	return 0;
 }

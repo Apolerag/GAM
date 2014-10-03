@@ -8,12 +8,10 @@
 #include <assert.h>  
 #include <math.h>  
 
-#include "base.h"
-#include "fichier.h"
-#include "file_priorite_int.h"
-#include "polygone.h"
 #include "fenetre.h"
 
+#include "fichier.h"
+#include "polygone.h"
 
 /*! variable externe permettant de lire les parametres sur le ligne de commande.*/
 extern char *optarg;
@@ -23,9 +21,9 @@ extern int opterr;
 
 int main(int argc, char **argv)  
 {  
+	char *in = NULL, *out = NULL;
 	int c;
 	int option1 = 0, option2 = 0, option3 = 0;
-	char *input = NULL, *output = NULL;
 	
 	opterr = 0;
 	while ((c = getopt(argc, argv, "1i:2o:3")) != EOF)
@@ -41,11 +39,11 @@ int main(int argc, char **argv)
 			case '3': 
 				option3 = 1;
 				break;
-			case 'o':
-				output = optarg;
+			case 'o': /*verifier non null*/
+				out = optarg;
 				break;
-			case 'i':
-				input = optarg;
+			case 'i': /*verifier non null*/
+				in = optarg; 
 				break;
 			case 'h': 
 			case '?': 
@@ -64,8 +62,8 @@ int main(int argc, char **argv)
 	printf("option1 : %d\n", option1);
 	printf("option2 : %d\n", option2);
 	printf("option3 : %d\n", option3);
-	printf("input %s\n", input);
-	printf("output %s\n", output);
+	printf("input %s\n", in);
+	printf("output %s\n", out);
 
 	glutInit(&argc, argv);  
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);  
@@ -75,23 +73,23 @@ int main(int argc, char **argv)
 	glutCreateWindow("fenetre"); 
 	definitionFenetre(0, 500, 0, 500, 10);
 	winInit();
-	glutDisplayFunc(display);
+	glutDisplayFunc(display);	
 
-	if(option1 && output != NULL)
+	if(option1 && out != NULL)
 	{
+		printf("option1\n");
 		glutMouseFunc(coordonnesPoint);
-		ecrireFichier(output, &P);
+		ecrireFichier(out, &P);
 	}
 
-	if(option2 && input != NULL)
+	if(option2 && in != NULL)
 	{
 		printf("option2\n");
-		ecrireFichier(input, &P);
+		lireFichier(in, &P);
 		glutDisplayFunc(displayPolygone);
 	}
+
 	glutMainLoop(); 
-
-
 
 	clearFenetre();
 	return EXIT_SUCCESS;  
