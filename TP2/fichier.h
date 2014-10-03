@@ -12,6 +12,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+/*! contient le nom du fichier à lire*/
+extern char *in;
+
+/*! contient le nom du fichier à écrire*/
+extern char *out;
+
 /*! lit un fichier contenant une liste de point formant un polygone*/
 void lireFichier(const char *fichier, polygone *P);
 

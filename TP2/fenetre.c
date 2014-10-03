@@ -121,10 +121,13 @@ void coordonnesPoint(const int button, const int state, const int x, const int y
 				vertex v;
 				v.coords[0] = x;
 				v.coords[1] = y;
-				ajoutePoint(&P,v);
-				displayPoint();
-				printf("%d %d\n",x,y );
-				ecrireFichier("res.txt" , &P);
+				if( (x > P.p[0].coords[0] + 5 || x < P.p[0].coords[0] - 5) && (y > P.p[0].coords[1] + 5 || y < P.p[0].coords[1] - 5) )
+				{
+					ajoutePoint(&P,v);
+					displayPoint();
+					printf("%d %d\n",x,y );
+					ecrireFichier(out , &P);
+				}
 			}
 		break;
 	}

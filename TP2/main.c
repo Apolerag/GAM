@@ -9,9 +9,11 @@
 #include <math.h>  
 
 #include "fenetre.h"
+/*! contient le nom du fichier à lire*/
+char *in;
 
-#include "fichier.h"
-#include "polygone.h"
+/*! contient le nom du fichier à écrire*/
+char *out;
 
 /*! variable externe permettant de lire les parametres sur le ligne de commande.*/
 extern char *optarg;
@@ -21,7 +23,7 @@ extern int opterr;
 
 int main(int argc, char **argv)  
 {  
-	char *in = NULL, *out = NULL;
+
 	int c;
 	int option1 = 0, option2 = 0, option3 = 0;
 	
