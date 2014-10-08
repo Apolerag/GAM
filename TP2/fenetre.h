@@ -13,6 +13,11 @@
 #include <GL/glut.h> 
 #include <stdio.h>
 #include <stdlib.h>
+/*! contient le nom du fichier à lire*/
+char *in;
+
+/*! contient le nom du fichier à écrire*/
+char *out;
 
 /*! Tailles diverses du systemes de fenetrage .*/
 typedef struct {
@@ -49,7 +54,9 @@ double myRandom (const double a, const double b);
 /*! Incantation d'ouverture de fenetre OpenGL */
 void winInit();
 
-/*! Generations des sites */
+/*! Generations des sites 
+* \arg *P le polygone à remplir
+*/
 void selectPoints (polygone *P);
 
 /*! Affichage.
@@ -67,9 +74,16 @@ void displayPoint();
 */
 void displayPolygone();
 
-/*!
-	récupere les coordonnées du point cliqué
+/*! récupere les coordonnées du point cliqué
+*
 */
 void coordonnesPoint(const int button, const int state, const int x, const int y);
+
+
+/*! controle si le polygone a plus de 2 points, est non aligné, et n'a pas d’auto‐intersections
+* \arg p le polygone à controler
+* \return 1 si le polygone est simple, 0 sinon
+*/
+int controlePolygoneSimple();
 
 #endif

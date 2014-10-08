@@ -23,11 +23,11 @@ typedef struct
 	vertex *p;
 	unsigned int nbVertex;
 	unsigned int nbOccupe;
-} polygone;
+} polygone; 
 
-/*!	initialise le polygone avec un tableau de vertex de taille taille;
-* /arg	p le polygone a initialiser
-* /arg taille la taille du nombre de sommet
+/*!	initialise le polygone avec un tableau de vertex de taille taille
+* \arg	p le polygone a initialiser
+* \arg taille la taille du nombre de sommet
 */
 void initialisePolygone(polygone *p, const int taille);
 
@@ -38,6 +38,6 @@ void videPolygone(polygone *p);
 /*!
 * insere un point dans le polygone
 */
-void ajoutePoint(polygone *p, vertex v);
+void ajoutePoint(polygone *p, const vertex v);
 
 #endif

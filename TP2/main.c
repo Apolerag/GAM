@@ -9,11 +9,7 @@
 #include <math.h>  
 
 #include "fenetre.h"
-/*! contient le nom du fichier à lire*/
-char *in;
 
-/*! contient le nom du fichier à écrire*/
-char *out;
 
 /*! variable externe permettant de lire les parametres sur le ligne de commande.*/
 extern char *optarg;
@@ -25,6 +21,7 @@ int main(int argc, char **argv)
 {  
 
 	int c;
+	int pol;
 	int option1 = 0, option2 = 0, option3 = 0;
 	
 	opterr = 0;
@@ -61,12 +58,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	printf("option1 : %d\n", option1);
-	printf("option2 : %d\n", option2);
-	printf("option3 : %d\n", option3);
-	printf("input %s\n", in);
-	printf("output %s\n", out);
-
 	glutInit(&argc, argv);  
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);  
 	glutInitWindowPosition(5,5);  
@@ -75,24 +66,24 @@ int main(int argc, char **argv)
 	glutCreateWindow("fenetre"); 
 	definitionFenetre(0, 500, 0, 500, 10);
 	winInit();
-	glutDisplayFunc(display);	
+	//glutDisplayFunc(display);	
 
 	if(option1 && out != NULL)
 	{
-		printf("option1\n");
 		glutMouseFunc(coordonnesPoint);
 		ecrireFichier(out, &P);
 	}
-
-	if(option2 && in != NULL)
+	else if(option2 && in != NULL)
 	{
-		printf("option2\n");
 		lireFichier(in, &P);
-		glutDisplayFunc(displayPolygone);
+		assert(P.p != NULL);
+		pol = controlePolygoneSimple();
+		printf("controlePolygoneSimple : %d\n", pol);
+		//glutDisplayFunc(displayPolygone);
 	}
 
 	glutMainLoop(); 
-
+  
 	clearFenetre();
 	return EXIT_SUCCESS;  
 }  	

@@ -15,7 +15,7 @@ void videPolygone(polygone *p)
 	free(p->p);
 }
 
-void ajoutePoint(polygone *p, vertex v)
+void ajoutePoint(polygone *p, const vertex v)
 {
 	if(p->nbVertex == p->nbOccupe)
 	{

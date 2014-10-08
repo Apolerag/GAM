@@ -1,13 +1,17 @@
-all: main
+CC=clang
+CCFLAGS=-c -Wall -ansi -pedantic
 
-main: file_priorite_int.o main.o
-	clang -o main file_priorite_int.o main.o
+SRC = $(wildcard *.c)
+OBJ = $(SRC:.c=.o)
+EXEC = programme.exe
 
-main.o: main.c file_priorite_int.o
-	clang -o main.o -c main.c -W -Wall -ansi -pedantic
+all: $(EXEC)
 
-file_priorite_int.o: file_priorite_int.c base.h
-	clang -o file_priorite_int.o -c file_priorite_int.c -W -Wall -ansi -pedantic
+$(EXEC): $(OBJ)
+	$(CC) $(OBJ)  -o $@
 
-clean: 
-	rm -rf *.o main
+%.o: %.cpp %.h
+	$(CC) $(CCFLAGS) $<
+
+clean:
+	rm -rf *.o *.exe
