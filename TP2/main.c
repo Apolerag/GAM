@@ -22,10 +22,12 @@ int main(int argc, char **argv)
 
 	int c;
 	int pol,conv;
-	int option1 = 0, option2 = 0, option3 = 0;
+	int option1 = 0, option2 = 0, option3 = 0, option4 = 0;
+	int nbPoints = 50;
+	vertex *v;
 	
 	opterr = 0;
-	while ((c = getopt(argc, argv, "1i:2o:3")) != EOF)
+	while ((c = getopt(argc, argv, "1i:2o:34n:")) != EOF)
 	{
 		switch (c)
 		{
@@ -37,6 +39,13 @@ int main(int argc, char **argv)
 				break;
 			case '3': 
 				option3 = 1;
+				break;
+			case '4': 
+				option4 = 1;
+				break;
+			case 'n': 
+				if ((sscanf(optarg, "%d", &nbPoints) != 1) || nbPoints <= 0)
+					nbPoints = 50;
 				break;
 			case 'o': /*verifier non null*/
 				out = optarg;
@@ -85,14 +94,22 @@ int main(int argc, char **argv)
 	{
 		lireFichier(in, &P);
 		assert(P.p != NULL);
-		pol = controlePolygoneSimple();
-		printf("controlePolygoneSimple : %d\n", pol);
-		conv = estConvexe();
-		printf("estConvexe : %d\n", conv);
+		if(controlePolygoneSimple())
+			conv = estConvexe();
+	}
+	else if(option4 && in != NULL)
+	{
+
+		lireFichier(in, &P);
+		assert(P.p != NULL);
+		ALLOUER(v,nbPoints);
+		selectPoints (v, nbPoints);
+		if(controlePolygoneSimple() && estConvexe())
+			positionPointsParRapportPolygone(v, nbPoints);
+		free(v);
 	}
 
 	glutMainLoop(); 
-  
 	clearFenetre();
 	return EXIT_SUCCESS;  
 }  	

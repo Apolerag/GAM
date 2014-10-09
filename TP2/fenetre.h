@@ -44,20 +44,21 @@ void definitionFenetre(const double X_min, const double X_max, const double Y_mi
 */
 void clearFenetre();
 
+/*! Incantation d'ouverture de fenetre OpenGL */
+void winInit();
+
 /*! Generation d'un nombre aleatoire entre deux bornes.
 * \arg a : borne inferieure
 * \arg b : borne superieure.
 * \warning verifier que random() retourne bien un entier long entre 0 et RAND_MAX inclus.
 */
-double myRandom (const double a, const double b);
-
-/*! Incantation d'ouverture de fenetre OpenGL */
-void winInit();
+double myRandom (double a, double b);
 
 /*! Generations des sites 
-* \arg *P le polygone à remplir
+* \arg *v un tableau de vertices
+* \arg nb le nombre de vertices
 */
-void selectPoints (polygone *P);
+void selectPoints (vertex *v, const int nb);
 
 /*! Affichage.
 *\warning Particularite: "callback function", ie pas d'argument transmis
@@ -89,6 +90,14 @@ int controlePolygoneSimple();
 * \return 1 si le polygone est convexe, o sinon
 */
 int estConvexe();
+
+/*! affiche la liste des vertices v 
+*	les vertices contenus dans le polygone sont colorés en vert
+*	les vertices a l'exterieur polygone sont colorés en rouge
+* \arg v un tableau de vertices
+* \arg nb la taille du tableau
+*/
+void positionPointsParRapportPolygone(const vertex *v, const int nb);
 
 
 #endif

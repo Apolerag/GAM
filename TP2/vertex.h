@@ -70,4 +70,12 @@ vertex minimum(const vertex *A, const vertex *B);
 */
 int minLexicographique(const vertex *v, const int taille);
 
+/*! Calcul la position d'un vertices par rapport à un triangle
+* \arg A,B,C le triangle
+* \arg N le point 
+* \return la position
+*/
+Position positionPointTriangle(const vertex *A, const vertex *B, 
+										const vertex *C, const vertex *N);
+
 #endif

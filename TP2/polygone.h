@@ -25,6 +25,15 @@ typedef struct
 	unsigned int nbOccupe;
 } polygone; 
 
+/*! les coordonnees extremes des points du polygone*/
+typedef struct 
+{
+	double Xmin;
+	double Xmax;
+	double Ymin;
+	double Ymax;
+} rectangleEnglobant;
+
 /*!	initialise le polygone avec un tableau de vertex de taille taille
 * \arg	p le polygone a initialiser
 * \arg taille la taille du nombre de sommet

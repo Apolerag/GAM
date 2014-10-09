@@ -20,26 +20,26 @@ void clearFenetre(fenetre *f)
 	videPolygone(&P);
 }
 
-double myRandom (const double a, const 	double b)
+void winInit()
+{
+	gluOrtho2D(f.minX, f.maxX, f.minY, f.maxY);
+}
+
+double myRandom (double a, double b)
 {
 	double tmp = random(); /* long int in [0, RAND_MAX] */
 
 	return a+tmp*((b-a)/RAND_MAX);
 }
 
-void winInit()
+void selectPoints (vertex *v, const int nb)
 {
-	gluOrtho2D(f.minX, f.maxX, f.minY, f.maxY);
-}
-
-void selectPoints (polygone *P)
-{
-	int n = P->nbVertex;
+	int n = nb;
 
 	while (--n >= 0)
 	{
-		P->p[n].coords[0] = myRandom(f.minX + 10, f.maxX-10);
-		P->p[n].coords[1] = myRandom(f.minY + 10, f.maxY-10);
+		v[n].coords[0] = myRandom(f.minX + 10, f.maxX-10);
+		v[n].coords[1] = myRandom(f.minY + 10, f.maxY-10);
 	}
 	
 }
@@ -269,22 +269,22 @@ int estConvexe()
 	while(orientationPolaire(&P.p[min],&P.p[min+1],&P.p[min+i]) == ALIGNES)
 		i++;
 
+
 	//controle sens de rotation du polygone
-	if(orientationPolaire(&P.p[min],&P.p[min+1],&P.p[min+i]) == DROITE)
+	if(orientationPolaire(&P.p[min],&P.p[(min+1)%P.nbOccupe],&P.p[(min+i)%P.nbOccupe]) == DROITE)
 	{
 		//on inverse
 		vertex *v = P.p;
 		ALLOUER(P.p,P.nbOccupe);
 		for(i = 0; i<P.nbOccupe; i++)
 		{
-			P.p[i] = v[P.nbOccupe -i];
+			P.p[i] = v[P.nbOccupe - 1 - i];
 		}
 		free(v);
-		P.p = v;		
+		P.nbVertex = P.nbOccupe;		
 	}
 
 	//controle polygone convexe
-
 	glColor3f(0.0, 0.0, 0.0); 
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -297,22 +297,16 @@ int estConvexe()
 
 	do
 	{
-		printf("i1 %d, i2 %d, i3 %d\n",i1,i2,i3 );
 		if(orientationPolaire(&P.p[i1],&P.p[i2],&P.p[i3]) == DROITE)
 		{
 			convexe = 0;
 			glColor3f(0.0, 1.0, 0.0);
 		}
-		else 
-		{
-			glColor3f(1.0, 1.0, 1.0);
-		}
+		else glColor3f(1.0, 1.0, 1.0);
 
-			glVertex2f(P.p[i1].coords[0], f.maxY - P.p[i1].coords[1]);
-			glVertex2f(P.p[i2].coords[0], f.maxY - P.p[i2].coords[1]);
+		glVertex2f(P.p[i1].coords[0], f.maxY - P.p[i1].coords[1]);
+		glVertex2f(P.p[i2].coords[0], f.maxY - P.p[i2].coords[1]);
 		
-
-
 		i1 = i2;
 		i2 = i3;
 		i3++;
@@ -320,9 +314,63 @@ int estConvexe()
 	}
 	while(i1 != min);
 
-
 	glEnd();
 
 	glFlush();
 	return convexe;
+}
+
+void positionPointsParRapportPolygone(const vertex *v, const int nb)
+{
+	vertex centre;
+	int i,j;
+	int x = 0,y = 0;
+	Position p;
+	int min = minLexicographique(P.p, P.nbOccupe);
+
+	glColor3f(0.0, 0.0, 0.0); 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glColor3f(1.0, 1.0, 1.0);
+
+	/* tracage du polygone*/
+	glBegin(GL_LINE_LOOP);
+
+	for(i = 0; i < P.nbOccupe ; i++)
+	{
+		glVertex2f(P.p[i].coords[0], f.maxY - P.p[i].coords[1]);
+	}
+
+	glEnd();
+
+	/* calcul du barycentre*/
+	for(i = 0; i < P.nbOccupe; i++)
+	{
+		x += P.p[i].coords[0];
+		y += P.p[i].coords[1];
+	}
+	centre.coords[0] = x / P.nbOccupe;
+	centre.coords[1] = y / P.nbOccupe;
+
+	glBegin(GL_POINTS);
+	for(i = 0; i < nb; i++)
+	{
+		p = DEHORS;
+		j = min;
+		do
+		{
+			p = positionPointTriangle(&centre, &P.p[j], 
+				&P.p[(j+1)%P.nbOccupe], &v[i]);
+
+			j++;
+			j %= P.nbOccupe;
+		}
+		while(j != min && p == DEHORS);
+		if(p == DEDANS) glColor3f(0.0, 1.0, 0.0);
+		else if(p == DESSUS) glColor3f(0.0, 0.0, 1.0);
+		else glColor3f(1.0, 0.0, 0.0);
+		glVertex2f(v[i].coords[0], f.maxY - v[i].coords[1]);
+	}
+	glEnd();
+
+	glFlush();
 }

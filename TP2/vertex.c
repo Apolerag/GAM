@@ -58,3 +58,22 @@ int minLexicographique(const vertex *v, const int taille)
 	}
 	return indice ;
 }
+
+/*! Calcul la position des vertices par rapport au triangle
+* 
+*/
+Position positionPointTriangle(const vertex *A, const vertex *B, 
+										const vertex *C, const vertex *N)
+{
+	Position position;
+	Orientation O1 = orientationPolaire(A,B,N) ;
+	Orientation O2 = orientationPolaire(B,C,N) ;
+	Orientation O3 = orientationPolaire(C,A,N) ;
+	if(O1 == DROITE || O2 == DROITE || O3 == DROITE)
+		position = DEHORS; 
+	else if(O1 == ALIGNES || O2 == ALIGNES  || O3 == ALIGNES )
+		position = DESSUS; 
+	else position = DEDANS; 
+	
+	return position;
+}
