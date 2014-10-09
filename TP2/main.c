@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 {  
 
 	int c;
-	int pol;
+	int pol,conv;
 	int option1 = 0, option2 = 0, option3 = 0;
 	
 	opterr = 0;
@@ -66,10 +66,10 @@ int main(int argc, char **argv)
 	glutCreateWindow("fenetre"); 
 	definitionFenetre(0, 500, 0, 500, 10);
 	winInit();
-	//glutDisplayFunc(display);	
 
 	if(option1 && out != NULL)
 	{
+		glutDisplayFunc(display);	
 		glutMouseFunc(coordonnesPoint);
 		ecrireFichier(out, &P);
 	}
@@ -80,6 +80,15 @@ int main(int argc, char **argv)
 		pol = controlePolygoneSimple();
 		printf("controlePolygoneSimple : %d\n", pol);
 		//glutDisplayFunc(displayPolygone);
+	}
+	else if(option3 && in != NULL)
+	{
+		lireFichier(in, &P);
+		assert(P.p != NULL);
+		pol = controlePolygoneSimple();
+		printf("controlePolygoneSimple : %d\n", pol);
+		conv = estConvexe();
+		printf("estConvexe : %d\n", conv);
 	}
 
 	glutMainLoop(); 

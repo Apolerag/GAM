@@ -80,10 +80,15 @@ void displayPolygone();
 void coordonnesPoint(const int button, const int state, const int x, const int y);
 
 
-/*! controle si le polygone a plus de 2 points, est non aligné, et n'a pas d’auto‐intersections
-* \arg p le polygone à controler
+/*! controle si le polygone P a plus de 2 points, est non aligné, et n'a pas d’auto‐intersections
 * \return 1 si le polygone est simple, 0 sinon
 */
 int controlePolygoneSimple();
+
+/*! controle si le polygone P est convexe
+* \return 1 si le polygone est convexe, o sinon
+*/
+int estConvexe();
+
 
 #endif

@@ -48,7 +48,6 @@ void displayPolygone()
 {
 	int i;
 
-	printf("displayPolygone\n");
 	glColor3f(0.0, 0.0, 0.0); 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(1.0, 1.0, 1.0);
@@ -143,6 +142,7 @@ int controlePolygoneSimple()
 	int i = 1, j;
 	int intersectionI = 0;
 	int intersectionJ = 0;
+	int retour = 1;
 	int min = minLexicographique(P.p, P.nbOccupe);
 	vertex *n1 = NULL,*n2 = NULL;
 	vertex A,B;
@@ -181,6 +181,11 @@ int controlePolygoneSimple()
 	if(i == P.nbOccupe)
 		return 0;
 
+	if (P.nbOccupe == 3)
+	{
+		displayPolygone();
+	}
+
 	glColor3f(0.0, 0.0, 0.0); 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(1.0, 1.0, 1.0);
@@ -212,6 +217,7 @@ int controlePolygoneSimple()
 						{
 							intersectionI = 1;
 							intersectionJ = 1;
+							retour = 0;
 						}
 					}
 				}
@@ -250,5 +256,73 @@ int controlePolygoneSimple()
 
 	glFlush();
 
-	return 1;
+	return retour;
+}
+
+int estConvexe()
+{
+	int i = 2;
+	int i1,i2,i3;
+	int convexe = 1;
+	int min = minLexicographique(P.p, P.nbOccupe);
+
+	while(orientationPolaire(&P.p[min],&P.p[min+1],&P.p[min+i]) == ALIGNES)
+		i++;
+
+	//controle sens de rotation du polygone
+	if(orientationPolaire(&P.p[min],&P.p[min+1],&P.p[min+i]) == DROITE)
+	{
+		//on inverse
+		vertex *v = P.p;
+		ALLOUER(P.p,P.nbOccupe);
+		for(i = 0; i<P.nbOccupe; i++)
+		{
+			P.p[i] = v[P.nbOccupe -i];
+		}
+		free(v);
+		P.p = v;		
+	}
+
+	//controle polygone convexe
+
+	glColor3f(0.0, 0.0, 0.0); 
+	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glColor3f(1.0, 1.0, 1.0);
+
+	glBegin(GL_LINES);
+	i1 = min;
+	i2 = (i1+1)%P.nbOccupe;
+	i3 = (i2+1)%P.nbOccupe;
+
+	do
+	{
+		printf("i1 %d, i2 %d, i3 %d\n",i1,i2,i3 );
+		if(orientationPolaire(&P.p[i1],&P.p[i2],&P.p[i3]) == DROITE)
+		{
+			convexe = 0;
+			glColor3f(0.0, 1.0, 0.0);
+		}
+		else 
+		{
+			glColor3f(1.0, 1.0, 1.0);
+		}
+
+			glVertex2f(P.p[i1].coords[0], f.maxY - P.p[i1].coords[1]);
+			glVertex2f(P.p[i2].coords[0], f.maxY - P.p[i2].coords[1]);
+		
+
+
+		i1 = i2;
+		i2 = i3;
+		i3++;
+		i3 %= P.nbOccupe;
+	}
+	while(i1 != min);
+
+
+	glEnd();
+
+	glFlush();
+	return convexe;
 }
