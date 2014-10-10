@@ -49,7 +49,7 @@ void displayPolygone()
 	int i;
 
 	glColor3f(0.0, 0.0, 0.0); 
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(1.0, 1.0, 1.0);
 
 	glBegin(GL_LINE_LOOP);
@@ -309,7 +309,7 @@ int estConvexe()
 		
 		i1 = i2;
 		i2 = i3;
-		i3++;
+		i3++;	
 		i3 %= P.nbOccupe;
 	}
 	while(i1 != min);
@@ -323,24 +323,9 @@ int estConvexe()
 void positionPointsParRapportPolygone(const vertex *v, const int nb)
 {
 	vertex centre;
-	int i,j;
-	int x = 0,y = 0;
+	int i,j, x = 0,y = 0;
 	Position p;
 	int min = minLexicographique(P.p, P.nbOccupe);
-
-	glColor3f(0.0, 0.0, 0.0); 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glColor3f(1.0, 1.0, 1.0);
-
-	/* tracage du polygone*/
-	glBegin(GL_LINE_LOOP);
-
-	for(i = 0; i < P.nbOccupe ; i++)
-	{
-		glVertex2f(P.p[i].coords[0], f.maxY - P.p[i].coords[1]);
-	}
-
-	glEnd();
 
 	/* calcul du barycentre*/
 	for(i = 0; i < P.nbOccupe; i++)
@@ -351,20 +336,20 @@ void positionPointsParRapportPolygone(const vertex *v, const int nb)
 	centre.coords[0] = x / P.nbOccupe;
 	centre.coords[1] = y / P.nbOccupe;
 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBegin(GL_POINTS);
 	for(i = 0; i < nb; i++)
 	{
-		p = DEHORS;
-		j = min;
-		do
+		j = min ;
+		while( !(orientationPolaire(&centre, &P.p[j], &v[i]) == GAUCHE && 
+			orientationPolaire(&centre, &P.p[(j+1)%P.nbOccupe], &v[i]) == DROITE) )
 		{
-			p = positionPointTriangle(&centre, &P.p[j], 
-				&P.p[(j+1)%P.nbOccupe], &v[i]);
-
 			j++;
 			j %= P.nbOccupe;
 		}
-		while(j != min && p == DEHORS);
+
+		p = positionPointTriangle(&centre, &P.p[j],  &P.p[(j+1)%P.nbOccupe], &v[i]);
+
 		if(p == DEDANS) glColor3f(0.0, 1.0, 0.0);
 		else if(p == DESSUS) glColor3f(0.0, 0.0, 1.0);
 		else glColor3f(1.0, 0.0, 0.0);
@@ -372,5 +357,8 @@ void positionPointsParRapportPolygone(const vertex *v, const int nb)
 	}
 	glEnd();
 
+
+
+	displayPolygone();
 	glFlush();
 }

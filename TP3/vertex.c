@@ -29,31 +29,30 @@ int memeVertex(const vertex *A, const vertex *B)
 	return 1;
 }
 
-int minimum(const vertex *A, const vertex *B)
+vertex minimum(const vertex *A, const vertex *B)
 {
 	int i = 0;
 	while(i < DIM)
 	{
-		if(A->coords[i] < B->coords[i])
-			return 0;
-		if(B->coords[i] < A->coords[i])
-			return 1;
+		if(A->coords[i] <= B->coords[i])
+			return *A;
 		i++;
 	}
-	return 1;
+	return *B;
 }
 
 int minLexicographique(const vertex *v, const int taille)
 {
-	vertex minL = v[0];
+	vertex minL = v[0], n;
 	int indice = 0 ;
+	
 	int i ;
 	for(i = 1; i < taille; i++) 
 	{
-
-		if(minimum(&v[i], &minL) == 0)
+		n = minimum(&v[i], &minL);
+		if( memeVertex( &n, &minL) )
 		{
-			minL = v[i];
+			minL = v[i]; 
 			indice = i ;
 		}
 	}
