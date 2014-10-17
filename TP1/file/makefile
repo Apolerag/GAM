@@ -1,13 +1,13 @@
-all: main
+all: programme
 
-main: file_priorite_int.o main.o
-	clang -o main file_priorite_int.o main.o
+programme: FilePrioriteVertex.o main.o
+	gcc -o programme FilePrioriteVertex.o main.o
 
-main.o: main.c file_priorite_int.o
-	clang -o main.o -c main.c -W -Wall -ansi -pedantic
+main.o: main.c FilePrioriteVertex.o
+	gcc -o main.o -c main.c -W -Wall -ansi -pedantic
 
-file_priorite_int.o: file_priorite_int.c base.h
-	clang -o file_priorite_int.o -c file_priorite_int.c -W -Wall -ansi -pedantic
+FilePrioriteVertex.o: FilePrioriteVertex.c base.h
+	gcc -o FilePrioriteVertex.o -c FilePrioriteVertex.c -Wall -ansi -pedantic -std=c99
 
 clean: 
-	rm -rf *.o main
+	rm -rf *.o programme

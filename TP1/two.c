@@ -57,8 +57,8 @@ void selectPoints (void)
 	rectangleEnglobantPolygone();
 	while (--n >= 0)
 	{
-		T[n].coords[0] = myRandom(minX + 10, maxX-10);
-		T[n].coords[1] = myRandom(minY + 10, maxY-10);
+		T[n].coords[0] = myRandom(0, 400);
+		T[n].coords[1] = myRandom(0, 400);
 	}
 	Orientation orient = orientationPolaire(T[0],T[1],T[2]);
 	if( orient == ALIGNES) 

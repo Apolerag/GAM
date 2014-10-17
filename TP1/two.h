@@ -26,7 +26,7 @@ typedef enum
 	GAUCHE = -1, 
 	ALIGNES = 0, 
 	DROITE = 1
-}Orientation;
+} Orientation;
 
 /*! enum pour la position du point par rapport au triangle ou au polygone*/
 typedef enum
