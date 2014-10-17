@@ -6,8 +6,7 @@
 #ifndef _FENETRE_H
 #define _FENETRE_H
 
-#include "polygone.h"
-#include "fichier.h"
+#include "vertex.h"
 
 #include <unistd.h>  
 #include <GL/glut.h> 
@@ -30,9 +29,6 @@ typedef struct {
 
 /*! la fenêtre qui est affichée*/
 fenetre f;
-
-/*! le polygone à dessiner */
-polygone P;
 
 /*! modifie la dimension de la fenetre
 * \arg X_min, X_max, Y_min, Y_max, margin les nouvelles dimensions de la fenetre
@@ -60,44 +56,10 @@ double myRandom (double a, double b);
 */
 void selectPoints (vertex *v, const int nb);
 
-/*! Affichage.
-*\warning Particularite: "callback function", ie pas d'argument transmis
+/*! calcul de l'enveloppe convexe des vertices
+* \arg *v un tableau de vertices
+* \arg nb le nombre de vertices
 */
-void display();
-
-/*! affiche les points au fur et à mesure que l'on clique sur la fenêtre
-* \warning Particularite: "callback function", ie pas d'argument transmis
-*/
-void displayPoint();
-
-/*! affiche les points d'un polygone
-* \warning Particularite: "callback function", ie pas d'argument transmis
-*/
-void displayPolygone();
-
-/*! récupere les coordonnées du point cliqué
-*
-*/
-void coordonnesPoint(const int button, const int state, const int x, const int y);
-
-
-/*! controle si le polygone P a plus de 2 points, est non aligné, et n'a pas d’auto‐intersections
-* \return 1 si le polygone est simple, 0 sinon
-*/
-int controlePolygoneSimple();
-
-/*! controle si le polygone P est convexe
-* \return 1 si le polygone est convexe, o sinon
-*/
-int estConvexe();
-
-/*! affiche la liste des vertices v 
-*	les vertices contenus dans le polygone sont colorés en vert
-*	les vertices a l'exterieur polygone sont colorés en rouge
-* \arg v un tableau de vertices
-* \arg nb la taille du tableau
-*/
-void positionPointsParRapportPolygone(const vertex *v, const int nb);
-
+void enveloppeConvexeBrut(const vertex *v, const int nb);
 
 #endif

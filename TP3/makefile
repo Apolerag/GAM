@@ -6,7 +6,8 @@ CC = clang
 OS = "unknown"
 SRC = $(wildcard *.c)
 OBJ = $(SRC:.c=.o)
-EXEC = tpga2
+$$$
+EXEC = tpga3
 
 # Add objectiveC library for MacOSX.
 ifneq ($(strip $(shell $(CC) -v 2>&1 | grep -i "Apple")),)

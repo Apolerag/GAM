@@ -8,10 +8,6 @@
 #include <assert.h>  
 #include <math.h>  
 
-#include "base.h"
-#include "fichier.h"
-#include "file_priorite_int.h"
-#include "polygone.h"
 #include "fenetre.h"
 
 
@@ -23,12 +19,15 @@ extern int opterr;
 
 int main(int argc, char **argv)  
 {  
+
 	int c;
-	int option1 = 0, option2 = 0, option3 = 0;
-	char *input = NULL, *output = NULL;
+	int pol,conv;
+	int option1 = 0, option2 = 0, option3 = 0, option4 = 0;
+	int nbPoints = 50;
+	vertex *v;
 	
 	opterr = 0;
-	while ((c = getopt(argc, argv, "1i:2o:3")) != EOF)
+	while ((c = getopt(argc, argv, "1i:2o:34n:")) != EOF)
 	{
 		switch (c)
 		{
@@ -41,11 +40,18 @@ int main(int argc, char **argv)
 			case '3': 
 				option3 = 1;
 				break;
-			case 'o':
-				output = optarg;
+			case '4': 
+				option4 = 1;
 				break;
-			case 'i':
-				input = optarg;
+			case 'n': 
+				if ((sscanf(optarg, "%d", &nbPoints) != 1) || nbPoints <= 0)
+					nbPoints = 50;
+				break;
+			case 'o': /*verifier non null*/
+				out = optarg;
+				break;
+			case 'i': /*verifier non null*/
+				in = optarg; 
 				break;
 			case 'h': 
 			case '?': 
@@ -61,12 +67,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	printf("option1 : %d\n", option1);
-	printf("option2 : %d\n", option2);
-	printf("option3 : %d\n", option3);
-	printf("input %s\n", input);
-	printf("output %s\n", output);
-
 	glutInit(&argc, argv);  
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);  
 	glutInitWindowPosition(5,5);  
@@ -75,24 +75,41 @@ int main(int argc, char **argv)
 	glutCreateWindow("fenetre"); 
 	definitionFenetre(0, 500, 0, 500, 10);
 	winInit();
-	glutDisplayFunc(display);
 
-	if(option1 && output != NULL)
+	if(option1 && out != NULL)
 	{
+		glutDisplayFunc(display);	
 		glutMouseFunc(coordonnesPoint);
-		ecrireFichier(output, &P);
+		ecrireFichier(out, &P);
 	}
-
-	if(option2 && input != NULL)
+	else if(option2 && in != NULL)
 	{
-		printf("option2\n");
-		ecrireFichier(input, &P);
-		glutDisplayFunc(displayPolygone);
+		lireFichier(in, &P);
+		assert(P.p != NULL);
+		pol = controlePolygoneSimple();
+		printf("controlePolygoneSimple : %d\n", pol);
+		//glutDisplayFunc(displayPolygone);
 	}
+	else if(option3 && in != NULL)
+	{
+		lireFichier(in, &P);
+		assert(P.p != NULL);
+		if(controlePolygoneSimple())
+			conv = estConvexe();
+	}
+	else if(option4 && in != NULL)
+	{
+
+		lireFichier(in, &P);
+		assert(P.p != NULL);
+		ALLOUER(v,nbPoints);
+		selectPoints (v, nbPoints);
+		if(controlePolygoneSimple() && estConvexe())
+			positionPointsParRapportPolygone(v, nbPoints);
+		free(v);
+	}
+
 	glutMainLoop(); 
-
-
-
 	clearFenetre();
 	return EXIT_SUCCESS;  
 }  	

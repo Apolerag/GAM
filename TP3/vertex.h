@@ -6,8 +6,6 @@
 #ifndef _VERTEX_H
 #define _VERTEX_H
 
-#include <stdio.h>
-
 #include "base.h"
 
 
@@ -62,9 +60,9 @@ int memeVertex(const vertex *A, const vertex *B);
 
 /*!
 * \arg A et B deux vertices
-* \return 0 si A<B, 1 sinon
+* \return le vertex qui est le plus petit dans l'ordre lexicographique
 */
-int minimum(const vertex *A, const vertex *B);
+vertex minimum(const vertex *A, const vertex *B);
 
 /*! Retourne l'indice du min lexicographique des points du fichier
 * \arg const vertex *v un tableau de vertex

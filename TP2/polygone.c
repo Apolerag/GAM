@@ -15,7 +15,7 @@ void videPolygone(polygone *p)
 	free(p->p);
 }
 
-void ajoutePoint(polygone *p, vertex v)
+void ajoutePoint(polygone *p, const vertex v)
 {
 	if(p->nbVertex == p->nbOccupe)
 	{
@@ -35,4 +35,20 @@ void ajoutePoint(polygone *p, vertex v)
 	p->p[p->nbOccupe] = v;
 	p->nbOccupe ++;
 
+}
+
+rectangleEnglobant rectangleEnglobantPolygone(const vertex *v,const int nb)
+{
+	rectangleEnglobant r;
+	r.Xmax = r.Xmin = v[0].coords[0];
+	r.Ymax = r.Ymin = v[0].coords[1];
+	int i;
+	for(i = 1; i < nb; i++)
+	{
+		if(r.Xmax < v[i].coords[0]) r.Xmax = v[i].coords[0];
+		if(r.Xmin > v[i].coords[0]) r.Xmin = v[i].coords[0];
+		if(r.Ymax < v[i].coords[1]) r.Ymax = v[i].coords[1];
+		if(r.Ymin > v[i].coords[1]) r.Ymin = v[i].coords[1];
+	}
+	return r;
 }
