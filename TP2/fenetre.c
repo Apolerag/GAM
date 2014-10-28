@@ -357,8 +357,6 @@ void positionPointsParRapportPolygone(const vertex *v, const int nb)
 	}
 	glEnd();
 
-
-
 	displayPolygone();
 	glFlush();
 }
