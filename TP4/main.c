@@ -24,8 +24,9 @@ int main(int argc, char **argv)
 	int c;
 	int nbPoints = 50;
 	vertex *v = NULL;
-	enveloppe e;
-	initialiseEnveloppe(&e);
+	enveloppe e1,e2;
+	initialiseEnveloppe(&e1);
+	initialiseEnveloppe(&e2);
 	
 	opterr = 0;
 	while ((c = getopt(argc, argv, "n:")) != EOF)
@@ -56,44 +57,14 @@ int main(int argc, char **argv)
 	winInit();
 	ALLOUER(v,nbPoints);
 	selectPoints (v, nbPoints);
-	enveloppeConvexeBrut(v, &e,nbPoints);
+	jarvis(v, &e1,nbPoints);
+	enveloppeConvexeBrut(v, &e2,nbPoints);
 
 
 	glutMainLoop(); 
 	clearFenetre(v,nbPoints);
 	return EXIT_SUCCESS;  
-	/*
-	int i; vertex *v;
-	vertex *j;
-	ALLOUER(v,5);
-	definitionFenetre(0, 700, 0, 700, 10);	
-	selectPoints (v, 5);
-	enveloppe *e = NULL;
-	ALLOUER(e,1);
-	initialiseEnveloppe(e);
-	for ( i = 0; i < 5; ++i)
-		ajouteElement(e,&v[i]);
-	
-	for ( i = 0; i < 5; ++i)
-	{
-	
-		printf("vertex %f %f\n", v[i].coords[0],v[i].coords[1]);
 
-	}
-	j = e->premier;
-	do
-	{
-		printf("vertex %f %f\n", j->coords[0],j->coords[1]);
-		j = j->suivant;
-	}
-	while(j != e->premier);
-	printf("\n");
-	enleveElement(e);
-	do
-	{
-		printf("vertex %f %f\n", j->coords[0],j->coords[1]);
-		j = j->suivant;
-	}
-	while(j != e->premier);*/
+
 }  	
 	

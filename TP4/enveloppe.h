@@ -24,7 +24,7 @@ void ajouteElement(enveloppe *e, vertex *v);
 /*! enleve le dernier vertex de la liste de l'enveloppe
 * \arg e l'enveloppe
 */
-void enleveElement(enveloppe *e);
+void enleveDernierElement(enveloppe *e);
 
 /*! calcul de l'enveloppe convexe des vertices en utilisant un algorithme "naif"
 * \arg *v un tableau de vertices
@@ -32,5 +32,12 @@ void enleveElement(enveloppe *e);
 * \arg e l'enveloppe
 */
 void enveloppeConvexeBrut(vertex *v, enveloppe *e, const int nb);
+
+/*! Calcul de l'enveloppe convexe selon la méthode de Jarvis
+* \arg *v un tableau de vertices
+* \arg nb le nombre de vertices
+* \arg e l'enveloppe
+*/
+void jarvis(vertex *v, enveloppe *e, const int nb);
 
 #endif

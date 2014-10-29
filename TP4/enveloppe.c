@@ -21,13 +21,15 @@ void ajouteElement(enveloppe *e, vertex *v)
 	{
 		v->precedent = e->dernier;
 		e->dernier->suivant = v;
+
 		v->suivant = e->premier;
-		e->dernier = v;
 		e->premier->precedent = v;
+
+		e->dernier = v;
 	}
 }
 
-void enleveElement(enveloppe *e)
+void enleveDernierElement(enveloppe *e)
 {
 	e->dernier = e->dernier->precedent;
 	e->dernier->suivant = e->premier;
@@ -39,8 +41,9 @@ void enveloppeConvexeBrut(vertex *v, enveloppe *e, const int nb)
 	/* calcul le temps d'execution*/
 	double temps;
     clock_t t1, t2;
-    initialiseEnveloppe(e);
 
+
+    initialiseEnveloppe(e);
 	assert(v != NULL);
 	assert(nb > 0);
 
@@ -48,18 +51,19 @@ void enveloppeConvexeBrut(vertex *v, enveloppe *e, const int nb)
 	int i, j, k;
 	int surEnveloppe;
 
-	/*calcul de l'enveloppe convexe*/
+ 	/*demarrage du chrono*/
 	t1 = clock();
 	i = min;
-
+	
+	/*calcul de l'enveloppe convexe*/
 	do
 	{
+		ajouteElement(e,&v[i]);
+
 		surEnveloppe = 0;
 		j = 0;
-		ajouteElement(e,&v[i]);
 		while( j < nb && !surEnveloppe)
 		{
-			printf("%d\n", j);
 			if(i != j)
 			{
 				
@@ -82,14 +86,74 @@ void enveloppeConvexeBrut(vertex *v, enveloppe *e, const int nb)
 			j++;
 		}
 	} while (i != min);	
+	/* fon du chrono */
 	t2 = clock();
     temps = (double)(t2-t1)/CLOCKS_PER_SEC;
     printf("durée : %lf\n", temps);
 
     effaceFenetre();
-	displayEnveloppe(e);
+	printf("displayPoints\n");
 	displayPoints(v, nb);
+    printf("displayEnveloppe\n");
+	displayEnveloppe(e);
 
 	glFlush();
 }
 
+void jarvis(vertex *v, enveloppe *e, const int nb)
+{
+	double temps;
+    clock_t t1, t2;
+
+    initialiseEnveloppe(e);
+	assert(v != NULL);
+	assert(nb > 0);
+
+	int min = minLexicographique(v, nb);
+	int courant, suivant;
+	
+	int i;
+
+ 	/*demarrage du chrono*/
+	t1 = clock();
+	/*ajouteElement(e,&v[min]);*/
+
+	courant = min;
+	/*ALLOUER(precedent,1);
+	//l
+	precedent->coords[0] = courant->coords[0] + 10;
+	precedent->coords[1] = courant->coords[1];*/
+
+
+	do
+	{
+		ajouteElement(e,&v[courant]);
+		
+		suivant = (courant + 1)%nb;
+		for (i = 0; i < nb; ++i)
+		{
+			if(i != courant && i != suivant)
+			{
+				if(orientationPolaire(&v[courant], &v[suivant], &v[i]) == DROITE)
+				{
+					suivant = i;
+				}
+			}
+			
+		}
+		courant = suivant;
+	} while (courant != min);	
+
+
+	t2 = clock();
+    temps = (double)(t2-t1)/CLOCKS_PER_SEC;
+    printf("durée : %lf\n", temps);
+
+    effaceFenetre();
+	printf("displayPoints\n");
+	displayPoints(v, nb);
+    printf("displayEnveloppe\n");
+	displayEnveloppe(e);
+
+	glFlush();
+}

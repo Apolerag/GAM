@@ -37,12 +37,10 @@ double myRandom (double a, double b)
 void selectPoints (vertex *v, const int nb)
 {
 	int n = nb;
-	/*if(!(f.maxX - f.minX > 200)) exit(-1);
-	if(!(f.maxY - f.minY > 200)) exit(-1);*/
 	while (--n >= 0)
 	{	
-		v[n].coords[0] = myRandom(f.minX + 100, f.maxX-100);
-		v[n].coords[1] = myRandom(f.minY + 100, f.maxY-100);
+		v[n].coords[0] = myRandom(f.minX + 20, f.maxX-20);
+		v[n].coords[1] = myRandom(f.minY + 20, f.maxY-20);
 	}
 		
 //	displayPoint(v,nb);
@@ -55,7 +53,6 @@ void effaceFenetre()
 
 void displayEnveloppe(const enveloppe *e)
 {
-	glColor3f(1.0, 1.0, 1.0);
 
 	glBegin(GL_LINE_LOOP);
 	glColor3f(1.0, 0.0, 0.0);
@@ -64,7 +61,6 @@ void displayEnveloppe(const enveloppe *e)
 	do
 	{
 		glVertex2f(j->coords[0],f.maxY - j->coords[1]);
-		printf("%lf %lf\n",j->coords[0],j->coords[1]);
 		j = j->suivant;
 	}
 	while(j != e->premier);
@@ -75,9 +71,8 @@ void displayEnveloppe(const enveloppe *e)
 void displayPoints(const vertex *v, const int nb)
 {
 	int i;
-	glColor3f(1.0, 1.0, 1.0);
 	glBegin(GL_POINTS);
-	glColor3f(0.0, 1.0, 0.0);
+	glColor3f(1.0, 1.0, 1.0);
 	for (i = 0; i < nb; ++i)
 	{
 		glVertex2f(v[i].coords[0], f.maxY - v[i].coords[1]);

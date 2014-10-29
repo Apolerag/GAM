@@ -1,10 +1,12 @@
 #include "vertex.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 double determinant(const double a, const double b, const double c,
 				const double d, const double e, const double f,
 				const double g, const double h, const double i)
 {
-	return (a * e * i + d * h * c + g * b * f ) - ( g * e * c + a * h * f + d * b * i);
+	return (a*e*i + d*h*c + g*b*f) - (g*e*c + a*h*f + d*b*i);
 }
 
 Orientation orientationPolaire(const vertex *A, const vertex *B, const vertex *C)
@@ -15,6 +17,19 @@ Orientation orientationPolaire(const vertex *A, const vertex *B, const vertex *C
 	if(det < 0) return DROITE;
 	else if(det > 0) return GAUCHE;
 	else return ALIGNES;
+}
+
+int comparePolaire(const vertex *A, const vertex *B, const vertex *C, const vertex *D)
+{
+	double det1 = determinant(1,1,1,
+						   A->coords[0],B->coords[0],C->coords[0],
+						   A->coords[1],B->coords[1],C->coords[1]);
+	double det2 = determinant(1,1,1,
+						   A->coords[0],B->coords[0],D->coords[0],
+						   A->coords[1],B->coords[1],D->coords[1]);
+	printf("det1 = %lf\n", det1);
+	printf("det2 = %lf\n", det2);
+	return 0;
 }
 
 int memeVertex(const vertex *A, const vertex *B)
