@@ -3,6 +3,16 @@
 * \date 2014
 */
 
+/*
+1 millions de points
+algo "naïf": 10.886148 s
+algo jarvis : 1.216959 s
+
+10 millions de points
+algo "naïf": 169.494484 s
+algo jarvis : 13.946895 s
+
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>  
@@ -24,9 +34,10 @@ int main(int argc, char **argv)
 	int c;
 	int nbPoints = 50;
 	vertex *v = NULL;
-	enveloppe e1,e2;
+	enveloppe e1,e2,e3;
 	initialiseEnveloppe(&e1);
 	initialiseEnveloppe(&e2);
+	initialiseEnveloppe(&e3);
 	
 	opterr = 0;
 	while ((c = getopt(argc, argv, "n:")) != EOF)
@@ -57,9 +68,11 @@ int main(int argc, char **argv)
 	winInit();
 	ALLOUER(v,nbPoints);
 	selectPoints (v, nbPoints);
-	jarvis(v, &e1,nbPoints);
-	enveloppeConvexeBrut(v, &e2,nbPoints);
 
+	/*jarvis(v, &e1,nbPoints);
+	enveloppeConvexeBrut(v, &e2,nbPoints);*/
+	graham(v, &e3,nbPoints);
+	printf("fin\n");
 
 	glutMainLoop(); 
 	clearFenetre(v,nbPoints);

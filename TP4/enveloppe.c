@@ -36,24 +36,96 @@ void enleveDernierElement(enveloppe *e)
 	e->premier->precedent = e->dernier; 
 }
 
+void permuteElement(vertex *v1, vertex *v2)
+{
+	vertex *p1 = v1->precedent, *s1 = v1->suivant;
+	vertex *p2 = v2->precedent, *s2 = v2->suivant;
+
+	v1->precedent = p2;
+	v2->precedent = p1;
+	v1->suivant = s2;
+	v2->suivant = s1;
+}
+
+// coupe la liste en 2 listes en prenant un terme sur deux
+vertex* separer(vertex *liste)
+{
+	vertex * m = NULL;
+	
+	if (liste == NULL || liste->suivant == NULL)
+		return NULL;
+	else
+	{
+		m = liste->suivant;
+		liste->suivant = m->suivant;
+		m->suivant=separer(m->suivant);
+		return m;
+	}
+}
+
+vertex* fusion(vertex *lg,vertex *ld, const vertex *origin)
+{
+	if (lg == NULL)
+	{
+		return ld;
+	}
+	if (ld == NULL)
+	{
+		return lg;
+	}
+	if(orientationPolaire(origin, lg,ld) == DROITE)
+	{
+		ld->suivant = fusion(lg,ld->suivant,origin);
+		return ld;
+	}
+	else
+	{
+		lg->suivant = fusion(lg->suivant,ld,origin);
+		return lg;
+	}
+}
+
+vertex* trier(vertex* l, const vertex *origin)
+{
+	vertex * m;
+
+	if (l != NULL && l->suivant != NULL) 
+	{
+		m = separer(l);
+		l = trier(l,origin);
+		m = trier(m,origin);
+		l = fusion(l,m,origin);
+	}
+	return l;
+}
+
+void afficherListe(vertex *v)
+{
+	vertex *j = v;
+	while (j != NULL)
+	{
+		printf("%lf, %lf \n",j->coords[0], j->coords[1]);
+		j = j->suivant;
+	}
+
+}
+
 void enveloppeConvexeBrut(vertex *v, enveloppe *e, const int nb)
 {
 	/* calcul le temps d'execution*/
 	double temps;
     clock_t t1, t2;
 
-
     initialiseEnveloppe(e);
 	assert(v != NULL);
 	assert(nb > 0);
 
 	int min = minLexicographique(v, nb);
-	int i, j, k;
+	int i = min, j, k;
 	int surEnveloppe;
 
  	/*demarrage du chrono*/
 	t1 = clock();
-	i = min;
 	
 	/*calcul de l'enveloppe convexe*/
 	do
@@ -86,17 +158,16 @@ void enveloppeConvexeBrut(vertex *v, enveloppe *e, const int nb)
 			j++;
 		}
 	} while (i != min);	
-	/* fon du chrono */
+
+	/*calcul du temps d'execution*/
 	t2 = clock();
     temps = (double)(t2-t1)/CLOCKS_PER_SEC;
-    printf("durée : %lf\n", temps);
+    printf("durée brute : %lf\n", temps);
 
+    /*affichage de l'enveloppe*/
     effaceFenetre();
-	printf("displayPoints\n");
 	displayPoints(v, nb);
-    printf("displayEnveloppe\n");
 	displayEnveloppe(e);
-
 	glFlush();
 }
 
@@ -110,50 +181,84 @@ void jarvis(vertex *v, enveloppe *e, const int nb)
 	assert(nb > 0);
 
 	int min = minLexicographique(v, nb);
-	int courant, suivant;
-	
-	int i;
+	int courant = min, suivant, i;
 
  	/*demarrage du chrono*/
 	t1 = clock();
-	/*ajouteElement(e,&v[min]);*/
-
-	courant = min;
-	/*ALLOUER(precedent,1);
-	//l
-	precedent->coords[0] = courant->coords[0] + 10;
-	precedent->coords[1] = courant->coords[1];*/
-
-
 	do
 	{
 		ajouteElement(e,&v[courant]);
-		
 		suivant = (courant + 1)%nb;
 		for (i = 0; i < nb; ++i)
 		{
 			if(i != courant && i != suivant)
 			{
 				if(orientationPolaire(&v[courant], &v[suivant], &v[i]) == DROITE)
-				{
-					suivant = i;
-				}
+					suivant = i;	
 			}
-			
 		}
 		courant = suivant;
 	} while (courant != min);	
 
+	/*calcul du temps d'execution*/
+	t2 = clock();
+    temps = (double)(t2-t1)/CLOCKS_PER_SEC;
+    printf("durée jarvis : %lf\n", temps);
+
+    /*affichage de l'enveloppe*/
+    effaceFenetre();
+	displayPoints(v, nb);
+	displayEnveloppe(e);
+	glFlush();
+}
+
+void graham(vertex *v, enveloppe *e, const int nb)
+{
+	double temps;
+    clock_t t1, t2;
+    initialiseEnveloppe(e);
+
+    int i;
+	vertex *liste = NULL;
+	vertex *courant = NULL;
+
+    /*demarrage du chrono*/
+	t1 = clock();
+	int min = minLexicographique(v, nb);
+	ajouteElement(e, &v[min]);
+
+	/* creation de la liste de vertices*/
+	for (i = 0; i < nb; ++i)
+	{
+		if(i != min) 
+		{
+  			v[i].suivant = liste;
+  			liste = &v[i]; 
+		}
+	}
+	
+	//printf("tri fusion\n");
+	liste = trier(liste, &v[min]);
+    effaceFenetre();
+
+	glBegin(GL_LINE_LOOP);
+	glColor3f(1.0, 0.0, 0.0);
+	courant = liste;
+	glVertex2f(v[min].coords[0],f.maxY - v[min].coords[1]);
+	while (courant != NULL)
+	{
+		printf("%lf, %lf \n",courant->coords[0], courant->coords[1]);
+		glVertex2f(courant->coords[0],f.maxY - courant->coords[1]);
+		courant = courant->suivant;
+	}
+	glEnd();
 
 	t2 = clock();
     temps = (double)(t2-t1)/CLOCKS_PER_SEC;
-    printf("durée : %lf\n", temps);
+    printf("durée graham : %lf\n", temps);
 
-    effaceFenetre();
-	printf("displayPoints\n");
 	displayPoints(v, nb);
-    printf("displayEnveloppe\n");
-	displayEnveloppe(e);
-
+	//displayEnveloppe(e);
 	glFlush();
+	printf("fin graham\n");
 }
