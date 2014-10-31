@@ -19,58 +19,23 @@ Orientation orientationPolaire(const vertex *A, const vertex *B, const vertex *C
 	else return ALIGNES;
 }
 
-int comparePolaire(const vertex *A, const vertex *B, const vertex *C, const vertex *D)
-{
-	double det1 = determinant(1,1,1,
-						   A->coords[0],B->coords[0],C->coords[0],
-						   A->coords[1],B->coords[1],C->coords[1]);
-	double det2 = determinant(1,1,1,
-						   A->coords[0],B->coords[0],D->coords[0],
-						   A->coords[1],B->coords[1],D->coords[1]);
-	printf("det1 = %lf\n", det1);
-	printf("det2 = %lf\n", det2);
-	return 0;
-}
-
-int memeVertex(const vertex *A, const vertex *B)
-{
-	int i = 0;
-	while(i < DIM)
-	{
-		if(A->coords[i] != B->coords[i])
-			return 0;
-		i++;
-	}
-	return 1;
-}
-
-vertex minimum(const vertex *A, const vertex *B)
-{
-	int i = 0;
-	while(i < DIM)
-	{
-		if(A->coords[i] <= B->coords[i])
-			return *A;
-		i++;
-	}
-	return *B;
-}
-
 int minLexicographique(const vertex *v, const int taille)
 {
-	vertex minL = v[0], n;
+	
+	vertex minL = v[0];
 	int indice = 0 ;
 	
 	int i ;
 	for(i = 1; i < taille; i++) 
 	{
-		n = minimum(&v[i], &minL);
-		if( memeVertex( &n, &minL) )
+		if( (v[i].coords[0] < minL.coords[0]) ||
+			((v[i].coords[0] == minL.coords[0]) && (v[i].coords[1] < minL.coords[1])))
 		{
 			minL = v[i]; 
 			indice = i ;
 		}
 	}
+	printf("min : %lf %lf \n", v[indice].coords[0], v[indice].coords[1]);
 	return indice ;
 }
 

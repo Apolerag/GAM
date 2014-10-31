@@ -166,8 +166,8 @@ void enveloppeConvexeBrut(vertex *v, enveloppe *e, const int nb)
 
     /*affichage de l'enveloppe*/
     effaceFenetre();
-	displayPoints(v, nb);
 	displayEnveloppe(e);
+	displayPoints(v, nb);
 	glFlush();
 }
 
@@ -207,8 +207,8 @@ void jarvis(vertex *v, enveloppe *e, const int nb)
 
     /*affichage de l'enveloppe*/
     effaceFenetre();
-	displayPoints(v, nb);
 	displayEnveloppe(e);
+	displayPoints(v, nb);
 	glFlush();
 }
 
@@ -220,7 +220,7 @@ void graham(vertex *v, enveloppe *e, const int nb)
 
     int i;
 	vertex *liste = NULL;
-	vertex *courant = NULL;
+	vertex *courant = NULL, *suivant = NULL, *precedent = NULL;
 
     /*demarrage du chrono*/
 	t1 = clock();
@@ -241,24 +241,66 @@ void graham(vertex *v, enveloppe *e, const int nb)
 	liste = trier(liste, &v[min]);
     effaceFenetre();
 
-	glBegin(GL_LINE_LOOP);
-	glColor3f(1.0, 0.0, 0.0);
-	courant = liste;
+	/*glBegin(GL_LINE_LOOP);
+	glColor3f(1.0, 1.0, 1.0);
+	precedent = liste;
+	courant = precedent->suivant;
+	suivant = courant->suivant;
+
+
 	glVertex2f(v[min].coords[0],f.maxY - v[min].coords[1]);
-	while (courant != NULL)
+	i=0;
+	while (suivant != NULL)
 	{
-		printf("%lf, %lf \n",courant->coords[0], courant->coords[1]);
-		glVertex2f(courant->coords[0],f.maxY - courant->coords[1]);
-		courant = courant->suivant;
+		printf("%d\n", orientationPolaire(precedent,courant,suivant));
+		precedent = courant;
+		courant = suivant;
+		suivant = suivant->suivant;
 	}
-	glEnd();
+	glEnd();*/
+
+	precedent = liste;
+	courant = precedent->suivant;
+	suivant = courant->suivant;
+	ajouteElement(e,precedent);
+	ajouteElement(e,courant);
+	courant = suivant;
+	suivant = suivant->suivant;
+	while (suivant != NULL)
+	{
+		if(e->dernier == e->premier)
+		{
+			ajouteElement(e,courant);
+			courant = suivant;
+			suivant = courant->suivant;
+
+		}
+		else if(e->premier->suivant == e->dernier)
+		{
+			ajouteElement(e,courant);
+			courant = suivant;
+			suivant = courant->suivant;
+
+		}
+		else if(orientationPolaire(e->dernier->precedent,e->dernier,courant) == GAUCHE)
+		{
+			ajouteElement(e,courant);
+			courant = suivant;
+			suivant = courant->suivant;
+
+		}
+		else 
+		{
+			enleveDernierElement(e);
+		}
+	}
 
 	t2 = clock();
     temps = (double)(t2-t1)/CLOCKS_PER_SEC;
     printf("durée graham : %lf\n", temps);
 
+	displayEnveloppe(e);
 	displayPoints(v, nb);
-	//displayEnveloppe(e);
 	glFlush();
-	printf("fin graham\n");
+//	printf("fin graham\n");
 }

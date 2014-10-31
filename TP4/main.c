@@ -69,8 +69,8 @@ int main(int argc, char **argv)
 	ALLOUER(v,nbPoints);
 	selectPoints (v, nbPoints);
 
-	/*jarvis(v, &e1,nbPoints);
-	enveloppeConvexeBrut(v, &e2,nbPoints);*/
+	jarvis(v, &e1,nbPoints);
+	//enveloppeConvexeBrut(v, &e2,nbPoints);
 	graham(v, &e3,nbPoints);
 	printf("fin\n");
 

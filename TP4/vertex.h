@@ -54,25 +54,6 @@ double determinant(const double a, const double b, const double c,
 */
 Orientation orientationPolaire(const vertex *A, const vertex *B, const vertex *C);
 
-/*! Calcul l'orientation polaire des Vertex A, B et C
-* \arg A, B le segment de base
-* \arg C et D les deux Vertices dont on veut comparer l'angle
-* \return -1 sir ABC < ABD, 0 si ABC == ABD, 1 si ABC > ABD
-*/
-int comparePolaire(const vertex *A, const vertex *B, const vertex *C, const vertex *D);
-
-/*! Compare les valeur de deux vertices
-* \arg A et B deux vertices
-* \return 1 si les vertices sont identiques, 0 sinon
-*/
-int memeVertex(const vertex *A, const vertex *B);
-
-/*!
-* \arg A et B deux vertices
-* \return le vertex qui est le plus petit dans l'ordre lexicographique
-*/
-vertex minimum(const vertex *A, const vertex *B);
-
 /*! Retourne l'indice du min lexicographique des points du fichier
 * \arg const vertex *v un tableau de vertex
 * \arg const int taile la taille du tableau
