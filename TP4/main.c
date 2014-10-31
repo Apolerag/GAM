@@ -7,6 +7,7 @@
 1 millions de points
 algo "naïf": 10.886148 s
 algo jarvis : 1.216959 s
+algo grahon : 1.858054 s
 
 10 millions de points
 algo "naïf": 169.494484 s
@@ -69,7 +70,7 @@ int main(int argc, char **argv)
 	ALLOUER(v,nbPoints);
 	selectPoints (v, nbPoints);
 
-	jarvis(v, &e1,nbPoints);
+	//jarvis(v, &e1,nbPoints);
 	//enveloppeConvexeBrut(v, &e2,nbPoints);
 	graham(v, &e3,nbPoints);
 	printf("fin\n");

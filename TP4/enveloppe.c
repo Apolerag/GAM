@@ -239,68 +239,31 @@ void graham(vertex *v, enveloppe *e, const int nb)
 	
 	//printf("tri fusion\n");
 	liste = trier(liste, &v[min]);
-    effaceFenetre();
-
-	/*glBegin(GL_LINE_LOOP);
-	glColor3f(1.0, 1.0, 1.0);
-	precedent = liste;
-	courant = precedent->suivant;
-	suivant = courant->suivant;
-
-
-	glVertex2f(v[min].coords[0],f.maxY - v[min].coords[1]);
-	i=0;
-	while (suivant != NULL)
-	{
-		printf("%d\n", orientationPolaire(precedent,courant,suivant));
-		precedent = courant;
-		courant = suivant;
-		suivant = suivant->suivant;
-	}
-	glEnd();*/
 
 	precedent = liste;
 	courant = precedent->suivant;
 	suivant = courant->suivant;
 	ajouteElement(e,precedent);
-	ajouteElement(e,courant);
-	courant = suivant;
-	suivant = suivant->suivant;
-	while (suivant != NULL)
+	while (courant != NULL)
 	{
-		if(e->dernier == e->premier)
+		while((e->premier != e->dernier) && (orientationPolaire(e->dernier->precedent,e->dernier,courant) == DROITE))
 		{
-			ajouteElement(e,courant);
-			courant = suivant;
-			suivant = courant->suivant;
+        	enleveDernierElement(e);
+		}
 
-		}
-		else if(e->premier->suivant == e->dernier)
-		{
-			ajouteElement(e,courant);
-			courant = suivant;
-			suivant = courant->suivant;
-
-		}
-		else if(orientationPolaire(e->dernier->precedent,e->dernier,courant) == GAUCHE)
-		{
-			ajouteElement(e,courant);
-			courant = suivant;
-			suivant = courant->suivant;
-
-		}
-		else 
-		{
-			enleveDernierElement(e);
-		}
+		suivant = courant->suivant;
+		ajouteElement(e,courant);
+		courant = suivant;
 	}
 
 	t2 = clock();
     temps = (double)(t2-t1)/CLOCKS_PER_SEC;
     printf("durée graham : %lf\n", temps);
 
+    effaceFenetre();
+    printf("displayEnveloppe\n");
 	displayEnveloppe(e);
+	printf("displayPoints\n");
 	displayPoints(v, nb);
 	glFlush();
-//	printf("fin graham\n");
 }

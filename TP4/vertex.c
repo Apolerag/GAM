@@ -35,7 +35,6 @@ int minLexicographique(const vertex *v, const int taille)
 			indice = i ;
 		}
 	}
-	printf("min : %lf %lf \n", v[indice].coords[0], v[indice].coords[1]);
 	return indice ;
 }
 
