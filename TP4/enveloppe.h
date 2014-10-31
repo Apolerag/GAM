@@ -30,15 +30,6 @@ void enleveDernierElement(enveloppe *e);
 */
 void permuteElement(vertex *v1, vertex *v2);
 
-// coupe la liste en 2 listes en prenant un terme sur deux
-vertex* Separer(vertex *liste);
-
-vertex* fusion(vertex *lg,vertex *ld, const vertex* origin);
-
-void afficherListe(vertex *v);
-
-void Trier(vertex* l, const vertex* origin);
-
 /*! calcul de l'enveloppe convexe des vertices en utilisant un algorithme "naif"
 * \arg *v un tableau de vertices
 * \arg nb le nombre de vertices
@@ -59,5 +50,12 @@ void jarvis(vertex *v, enveloppe *e, const int nb);
 * \arg e l'enveloppe
 */
 void graham(vertex *v, enveloppe *e, const int nb);
+
+/*! Calcul de l'enveloppe convexe selon la méthode d'insertion lexicographique
+* \arg *v un tableau de vertices
+* \arg nb le nombre de vertices
+* \arg e l'enveloppe
+*/
+void insertionLexicographique(vertex *v, enveloppe *e, const int nb);
 
 #endif

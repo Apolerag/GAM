@@ -68,4 +68,14 @@ int minLexicographique(const vertex *v, const int taille);
 Position positionPointTriangle(const vertex *A, const vertex *B, 
 										const vertex *C, const vertex *N);
 
+
+// coupe la liste en 2 listes en prenant un terme sur deux
+vertex* Separer(vertex *liste);
+
+vertex* fusion(vertex *lg,vertex *ld, const vertex* origin);
+
+void afficherListe(vertex *v);
+
+vertex* trier(vertex* l, const vertex* origin);
+
 #endif

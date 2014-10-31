@@ -1,5 +1,6 @@
 #include "enveloppe.h"
 #include "fenetre.h"
+#include "FilePrioriteVertex.h"
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,69 +46,6 @@ void permuteElement(vertex *v1, vertex *v2)
 	v2->precedent = p1;
 	v1->suivant = s2;
 	v2->suivant = s1;
-}
-
-// coupe la liste en 2 listes en prenant un terme sur deux
-vertex* separer(vertex *liste)
-{
-	vertex * m = NULL;
-	
-	if (liste == NULL || liste->suivant == NULL)
-		return NULL;
-	else
-	{
-		m = liste->suivant;
-		liste->suivant = m->suivant;
-		m->suivant=separer(m->suivant);
-		return m;
-	}
-}
-
-vertex* fusion(vertex *lg,vertex *ld, const vertex *origin)
-{
-	if (lg == NULL)
-	{
-		return ld;
-	}
-	if (ld == NULL)
-	{
-		return lg;
-	}
-	if(orientationPolaire(origin, lg,ld) == DROITE)
-	{
-		ld->suivant = fusion(lg,ld->suivant,origin);
-		return ld;
-	}
-	else
-	{
-		lg->suivant = fusion(lg->suivant,ld,origin);
-		return lg;
-	}
-}
-
-vertex* trier(vertex* l, const vertex *origin)
-{
-	vertex * m;
-
-	if (l != NULL && l->suivant != NULL) 
-	{
-		m = separer(l);
-		l = trier(l,origin);
-		m = trier(m,origin);
-		l = fusion(l,m,origin);
-	}
-	return l;
-}
-
-void afficherListe(vertex *v)
-{
-	vertex *j = v;
-	while (j != NULL)
-	{
-		printf("%lf, %lf \n",j->coords[0], j->coords[1]);
-		j = j->suivant;
-	}
-
 }
 
 void enveloppeConvexeBrut(vertex *v, enveloppe *e, const int nb)
@@ -259,6 +197,42 @@ void graham(vertex *v, enveloppe *e, const int nb)
 	t2 = clock();
     temps = (double)(t2-t1)/CLOCKS_PER_SEC;
     printf("durée graham : %lf\n", temps);
+
+    effaceFenetre();
+    printf("displayEnveloppe\n");
+	displayEnveloppe(e);
+	printf("displayPoints\n");
+	displayPoints(v, nb);
+	glFlush();
+}
+
+void insertionLexicographique(vertex *v, enveloppe *e, const int nb)
+{
+	double temps;
+    clock_t t1, t2;
+    initialiseEnveloppe(e);
+     /*demarrage du chrono*/
+	t1 = clock();
+	int min = minLexicographique(v, nb);
+	
+	int i;
+	File_Priorite *file;
+	file = creerFile(nb);
+	for ( i = 0; i < nb; ++i)
+	{
+		insererVertexFile(file, &v[i]);
+	}
+	afficherFile(file);
+
+	for (i = 0; i < 3; ++i)
+	{
+		vertex t = extremierFile(file);
+		ajouteElement(e, &t);
+	}
+
+	t2 = clock();
+    temps = (double)(t2-t1)/CLOCKS_PER_SEC;
+    printf("durée insertionLexicographique : %lf\n", temps);
 
     effaceFenetre();
     printf("displayEnveloppe\n");

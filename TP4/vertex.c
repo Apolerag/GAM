@@ -56,3 +56,89 @@ Position positionPointTriangle(const vertex *A, const vertex *B,
 	
 	return position;
 }
+
+/* tri fusion de la liste*/
+vertex* separer(vertex *liste)
+{
+	vertex *m;
+	if (liste == NULL || liste->suivant == NULL)
+		return NULL;
+	else
+	{
+		m = liste->suivant;
+		liste->suivant = m->suivant;
+		m->suivant=separer(m->suivant);
+		return m;
+	}
+}
+
+vertex* fusion(vertex *lg,vertex *ld, const vertex *origin)
+{
+	vertex *retour = NULL;
+	if (lg == NULL)
+	{
+		return ld;
+	}
+	if (ld == NULL)
+	{
+		return lg;
+	}
+
+	if(orientationPolaire(origin, lg,ld ) == DROITE)
+	{
+		retour = ld;
+		ld = ld->suivant;
+	}
+	else
+	{
+		retour = lg;
+		lg = lg->suivant;
+	}
+	vertex *courant = retour;
+	retour->suivant = NULL;
+
+	while(lg != NULL && ld != NULL)
+	{
+		if(orientationPolaire(origin, lg,ld) == DROITE)
+		{
+			courant->suivant = ld;
+			ld = ld->suivant;
+		}
+		else
+		{
+			courant->suivant = lg;
+			lg = lg->suivant;
+		}
+		courant = courant->suivant;
+	}
+
+	if(lg != NULL) courant->suivant = lg;
+	else courant->suivant = ld;
+	
+	return retour;
+}
+
+vertex* trier(vertex* l, const vertex *origin)
+{
+	vertex * m;
+
+	if (l != NULL && l->suivant != NULL) 
+	{
+		m = separer(l);
+		l = trier(l,origin);
+		m = trier(m,origin);
+		l = fusion(l,m,origin);
+	}
+	return l;
+}
+
+void afficherListe(vertex *v)
+{
+	vertex *j = v;
+	while (j != NULL)
+	{
+		printf("%lf, %lf \n",j->coords[0], j->coords[1]);
+		j = j->suivant;
+	}
+
+}

@@ -32,6 +32,7 @@ extern int opterr;
 
 int main(int argc, char **argv)  
 {  
+	printf("\E[34;1mhel\E[mlo\n");
 	int c;
 	int nbPoints = 50;
 	vertex *v = NULL;
