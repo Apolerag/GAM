@@ -69,6 +69,9 @@ Position positionPointTriangle(const vertex *A, const vertex *B,
 										const vertex *C, const vertex *N);
 
 
+/*! affiche les informations d'un vertex*/
+void afficherVertex(const vertex * v);
+
 // coupe la liste en 2 listes en prenant un terme sur deux
 vertex* Separer(vertex *liste);
 

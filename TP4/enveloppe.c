@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 void initialiseEnveloppe(enveloppe *e)
 {
@@ -17,6 +18,7 @@ void ajouteElement(enveloppe *e, vertex *v)
 	if(e->premier == NULL)
 	{
 		e->premier = e->dernier = v;
+		v->suivant = v->precedent = v;
 	}
 	else
 	{
@@ -30,11 +32,19 @@ void ajouteElement(enveloppe *e, vertex *v)
 	}
 }
 
+void enlevePremierElement(enveloppe *e)
+{
+	e->dernier->suivant = e->premier->suivant;
+	e->premier = e->premier->suivant;
+		
+	e->premier->precedent = e->dernier; 
+}
+
 void enleveDernierElement(enveloppe *e)
 {
+	e->premier->precedent = e->dernier->precedent; 
 	e->dernier = e->dernier->precedent;
 	e->dernier->suivant = e->premier;
-	e->premier->precedent = e->dernier; 
 }
 
 void permuteElement(vertex *v1, vertex *v2)
@@ -211,10 +221,9 @@ void insertionLexicographique(vertex *v, enveloppe *e, const int nb)
 	double temps;
     clock_t t1, t2;
     initialiseEnveloppe(e);
+    vertex *t;
      /*demarrage du chrono*/
 	t1 = clock();
-	int min = minLexicographique(v, nb);
-	
 	int i;
 	File_Priorite *file;
 	file = creerFile(nb);
@@ -222,13 +231,51 @@ void insertionLexicographique(vertex *v, enveloppe *e, const int nb)
 	{
 		insererVertexFile(file, &v[i]);
 	}
-	afficherFile(file);
-
+	//afficherFile(file);
 	for (i = 0; i < 3; ++i)
 	{
-		vertex t = extremierFile(file);
-		ajouteElement(e, &t);
+		t = extremierFile(file);
+		//afficherVertex(t);
+		ajouteElement(e, t);
 	}
+
+	if(orientationPolaire(e->premier, e->premier->suivant,e->dernier) == DROITE)
+		permuteElement(e->premier, e->dernier);
+
+	while(file->nbElementsCourant > 0)
+	{
+		t = extremierFile(file);
+
+		//bouble infini car dernier = dernier ->precedent
+		while(orientationPolaire(e->dernier->precedent, e->dernier, t) 
+			== DROITE && (e->premier != e->dernier->precedent) )
+		{
+			printf("%d\n", orientationPolaire(e->dernier->precedent, e->dernier, t) );
+
+			printf("enleveDernierElement\n");
+			enleveDernierElement(e);
+		}
+		//bouble infini car premier = premier->suivant
+		while(orientationPolaire(e->premier->suivant, e->premier, t ) 
+			== GAUCHE && (e->premier != e->dernier->precedent) )
+		{
+			/*afficherVertex(t);
+			afficherVertex(e->premier->suivant);
+			afficherVertex(e->premier);
+			afficherVertex(e->dernier);*/
+
+			printf("%d\n", orientationPolaire(e->premier->suivant, e->premier, t ) );
+			printf("enlevePremierElement\n");
+			enlevePremierElement(e);
+		}
+		
+		printf("ajouteElement\n");
+		ajouteElement(e, t);
+
+		printf("finwhile\n");
+	}
+
+
 
 	t2 = clock();
     temps = (double)(t2-t1)/CLOCKS_PER_SEC;

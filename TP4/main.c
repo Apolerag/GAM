@@ -32,14 +32,15 @@ extern int opterr;
 
 int main(int argc, char **argv)  
 {  
-	printf("\E[34;1mhel\E[mlo\n");
+	//printf("\E[34;1mhel\E[mlo\n");
 	int c;
 	int nbPoints = 50;
 	vertex *v = NULL;
-	enveloppe e1,e2,e3;
+	enveloppe e1,e2,e3,e4;
 	initialiseEnveloppe(&e1);
 	initialiseEnveloppe(&e2);
 	initialiseEnveloppe(&e3);
+	initialiseEnveloppe(&e4);
 	
 	opterr = 0;
 	while ((c = getopt(argc, argv, "n:")) != EOF)
@@ -73,7 +74,8 @@ int main(int argc, char **argv)
 
 	//jarvis(v, &e1,nbPoints);
 	//enveloppeConvexeBrut(v, &e2,nbPoints);
-	graham(v, &e3,nbPoints);
+	//graham(v, &e3,nbPoints);
+	insertionLexicographique( v, &e4, nbPoints);
 	printf("fin\n");
 
 	glutMainLoop(); 

@@ -57,6 +57,15 @@ Position positionPointTriangle(const vertex *A, const vertex *B,
 	return position;
 }
 
+void afficherVertex(const vertex * v)
+{
+	int i;
+	printf("Vertex : ");
+	for(i=0; i<DIM; i++)
+		printf("%lf ", v->coords[i]);
+	printf("\n");
+}
+
 /* tri fusion de la liste*/
 vertex* separer(vertex *liste)
 {

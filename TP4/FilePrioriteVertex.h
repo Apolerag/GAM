@@ -38,13 +38,10 @@ void insererVertexFile(File_Priorite * f, vertex * v);
 void afficherFile(File_Priorite * f);
 
 /*! récupère et enleve le premier élément de la file, celle ci est réorganisée*/
-vertex extremierFile(File_Priorite * f);
+vertex* extremierFile(File_Priorite * f);
 
 /*! échange le contenu des cases i et j de la file*/
 void echangeCase(File_Priorite * f, const int i, const int j);
-
-/*! affiche les informations d'un vertex*/
-void afficherVertex(const vertex * v);
 
 /*! compare lexicographiquement deux vertex - retourne INFERIEUR si le premier est 
 	inférieur lexicographiquement au deuxième, EGAUX si les deux vertexs sont 

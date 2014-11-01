@@ -35,7 +35,7 @@ void insererVertexFile(File_Priorite * f, vertex * v)
 
 	int i ;
 	i = f->nbElementsCourant ;
-	while((ordreLexicographiqueVertex(&(f->file[i/2]), &(f->file[i])) == INFERIEUR) 
+	while((ordreLexicographiqueVertex(&(f->file[i/2]), &(f->file[i])) == SUPERIEUR) 
 		&& (i > 1)) {
 
 		echangeCase(f, i, i/2);
@@ -53,20 +53,19 @@ void afficherFile(File_Priorite * f)
 	}
 }
 
-vertex extremierFile(File_Priorite * f)
+vertex* extremierFile(File_Priorite * f)
 {
 	echangeCase(f, 1, f->nbElementsCourant);
 	f->nbElementsCourant--;
 	Ordre gauche, droite;
 
-	int i;
-	i = 1;
+	int i = 1;
 	while(2*i < f->nbElementsCourant)
 	{
 		gauche = ordreLexicographiqueVertex(&f->file[i], &f->file[2*i]);
 		droite = ordreLexicographiqueVertex(&f->file[i], &f->file[(2*i)+1]);
-		if((gauche == INFERIEUR) && (droite == INFERIEUR)) {
-			if(ordreLexicographiqueVertex(&f->file[2*i], &f->file[(2*i)+1]) == SUPERIEUR) {
+		if((gauche == SUPERIEUR) && (droite == SUPERIEUR)) {
+			if(ordreLexicographiqueVertex(&f->file[2*i], &f->file[(2*i)+1]) == INFERIEUR) {
 				echangeCase(f, i, 2*i);
 				i *= 2 ; 
 			}
@@ -75,11 +74,11 @@ vertex extremierFile(File_Priorite * f)
 				i *= 2 ; i += 1 ;
 			}	
 		}
-		else if(gauche == INFERIEUR) {
+		else if(gauche == SUPERIEUR) {
 			echangeCase(f, i, 2*i);
 			i *= 2 ; 
 		}
-		else if(droite == INFERIEUR) {
+		else if(droite == SUPERIEUR) {
 			echangeCase(f, i, (2*i)+1);
 			i *= 2 ; i += 1 ;
 		}
@@ -88,11 +87,11 @@ vertex extremierFile(File_Priorite * f)
 	}
 	/* Cas spécial quand il n'y a plus que deux éléments */
 	if(f->nbElementsCourant == 2) {
-		if(ordreLexicographiqueVertex(&f->file[1], &f->file[2]) == INFERIEUR)
+		if(ordreLexicographiqueVertex(&f->file[1], &f->file[2]) == SUPERIEUR)
 			echangeCase(f, 1, 2);
 	}
 
-	return f->file[f->nbElementsCourant+1];
+	return &f->file[f->nbElementsCourant+1];
 }
 
 void echangeCase(File_Priorite * f, const int i, const int j)
@@ -101,15 +100,6 @@ void echangeCase(File_Priorite * f, const int i, const int j)
 	temp = f->file[i];
 	f->file[i] = f->file[j];
 	f->file[j] = temp;
-}
-
-void afficherVertex(const vertex * v)
-{
-	int i;
-	printf("Vertex : ");
-	for(i=0; i<DIM; i++)
-		printf("%lf ", v->coords[i]);
-	printf("\n");
 }
 
 Ordre ordreLexicographiqueVertex(const vertex * v1, const vertex * v2)
