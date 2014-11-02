@@ -1,6 +1,7 @@
 #include "vertex.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 double determinant(const double a, const double b, const double c,
 				const double d, const double e, const double f,
@@ -150,4 +151,16 @@ void afficherListe(vertex *v)
 		j = j->suivant;
 	}
 
+}
+
+double distanceVertex(vertex *v1, vertex *v2)
+{
+	int i;
+	double retour = 0;
+	for(i=0; i<DIM; i++)
+	{
+		retour += pow((v1->coords[i] - v2->coords[i]),2);
+		
+	}
+	return sqrt(retour);
 }

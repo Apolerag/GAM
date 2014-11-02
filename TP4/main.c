@@ -63,10 +63,10 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);  
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);  
 	glutInitWindowPosition(5,5);  
-	glutInitWindowSize(700,700);
+	glutInitWindowSize(500,500);
 
 	glutCreateWindow("fenêtre"); 
-	definitionFenetre(0, 700, 0, 700, 10);
+	definitionFenetre(0, 50, 0, 50, 10);
 
 	winInit();
 	ALLOUER(v,nbPoints);

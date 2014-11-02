@@ -7,6 +7,7 @@ typedef struct
 {
 	vertex *premier;
 	vertex *dernier;
+	unsigned int nb;
 } enveloppe;
 
 /*! initialise les pointeurs de l'envellope à NULL
@@ -28,7 +29,7 @@ void enleveDernierElement(enveloppe *e);
 /*! échange les positions de deux vertices dans la liste
 * \arg v1, v2 les vertices à échanger
 */
-void permuteElement(vertex *v1, vertex *v2);
+void permuteElement(enveloppe *e, vertex *v1, vertex *v2);
 
 /*! calcul de l'enveloppe convexe des vertices en utilisant un algorithme "naif"
 * \arg *v un tableau de vertices

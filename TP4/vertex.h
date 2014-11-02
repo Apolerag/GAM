@@ -8,7 +8,6 @@
 
 #include "base.h"
 
-
 /*! Dimension de l'espace */
 #define DIM 2
 
@@ -72,7 +71,8 @@ Position positionPointTriangle(const vertex *A, const vertex *B,
 /*! affiche les informations d'un vertex*/
 void afficherVertex(const vertex * v);
 
-// coupe la liste en 2 listes en prenant un terme sur deux
+/* tir par fusion*/
+
 vertex* Separer(vertex *liste);
 
 vertex* fusion(vertex *lg,vertex *ld, const vertex* origin);
@@ -80,5 +80,7 @@ vertex* fusion(vertex *lg,vertex *ld, const vertex* origin);
 void afficherListe(vertex *v);
 
 vertex* trier(vertex* l, const vertex* origin);
+
+double distanceVertex(vertex *v1, vertex *v2);
 
 #endif

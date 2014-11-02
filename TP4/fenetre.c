@@ -39,8 +39,8 @@ void selectPoints (vertex *v, const int nb)
 	int n = nb;
 	while (--n >= 0)
 	{	
-		v[n].coords[0] = myRandom(f.minX + 20, f.maxX-20);
-		v[n].coords[1] = myRandom(f.minY + 20, f.maxY-20);
+		v[n].coords[0] = myRandom(f.minX , f.maxX);
+		v[n].coords[1] = myRandom(f.minY, f.maxY);
 	}
 		
 //	displayPoint(v,nb);
@@ -58,12 +58,14 @@ void displayEnveloppe(const enveloppe *e)
 	glColor3f(0.0, 0.0, 1.0);
 
 	vertex *j = e->premier;
+	printf("e->nb %d\n", e->nb);
+
 	do
 	{
 		glVertex2f(j->coords[0],f.maxY - j->coords[1]);
 		j = j->suivant;
 	}
-	while(j != e->premier);
+	while(j != NULL);
 	glEnd();
 
 }

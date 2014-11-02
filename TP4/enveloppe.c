@@ -11,51 +11,92 @@ void initialiseEnveloppe(enveloppe *e)
 {
 	e->premier = NULL;
 	e->dernier = NULL;
+	e->nb = 0;
 }
 
 void ajouteElement(enveloppe *e, vertex *v)
 {
-	if(e->premier == NULL)
+	if(e->nb == 0)
 	{
+		v->precedent = v->suivant = NULL;
 		e->premier = e->dernier = v;
-		v->suivant = v->precedent = v;
 	}
 	else
 	{
-		v->precedent = e->dernier;
 		e->dernier->suivant = v;
 
-		v->suivant = e->premier;
-		e->premier->precedent = v;
-
+		v->suivant = NULL;
+		v->precedent = e->dernier;
 		e->dernier = v;
 	}
+	e->nb ++;
 }
 
 void enlevePremierElement(enveloppe *e)
-{
-	e->dernier->suivant = e->premier->suivant;
-	e->premier = e->premier->suivant;
-		
-	e->premier->precedent = e->dernier; 
+{	
+	if(e->nb == 1 || e->nb == 0)
+	{
+		e->premier = e->dernier = NULL;
+		e->nb = 0;
+	}
+	else
+	{
+		vertex *t = e->premier->suivant;
+		t->precedent = NULL;
+		e->premier->suivant = NULL;
+		e->premier = t;
+
+		e->nb --;
+	}
 }
 
 void enleveDernierElement(enveloppe *e)
 {
-	e->premier->precedent = e->dernier->precedent; 
-	e->dernier = e->dernier->precedent;
-	e->dernier->suivant = e->premier;
+	if(e->nb == 1 || e->nb == 0)
+	{
+		e->premier = e->dernier = NULL;
+		e->nb = 0;
+	}
+	else
+	{
+		vertex *t = e->dernier->precedent;
+		t->suivant = NULL;
+		e->dernier->precedent = NULL;
+		e->dernier = t;
+
+		e->nb --;
+	}
 }
 
-void permuteElement(vertex *v1, vertex *v2)
+void permuteElement(enveloppe *e, vertex *v1, vertex *v2)
 {
-	vertex *p1 = v1->precedent, *s1 = v1->suivant;
-	vertex *p2 = v2->precedent, *s2 = v2->suivant;
+	if(e->nb == 2)
+	{
+		vertex *t = e->premier;
+		e->premier = e->dernier;
+		e->dernier = t;
 
-	v1->precedent = p2;
-	v2->precedent = p1;
-	v1->suivant = s2;
-	v2->suivant = s1;
+		e->premier->suivant = e->dernier;
+		e->dernier->precedent = e->premier;
+
+		e->premier->precedent = e->dernier->suivant = NULL;
+	}
+	else
+	{
+		vertex *p1 = v1->precedent, *s1 = v1->suivant;
+		vertex *p2 = v2->precedent, *s2 = v2->suivant;
+
+		v1->precedent = p2;
+		v2->precedent = p1;
+		v1->suivant = s2;
+		v2->suivant = s1;
+
+		if(p1 != NULL) p1->suivant = v2;
+		if(p2 != NULL) p2->suivant = v1;
+		if(s1 != NULL) s1->precedent = v2;
+		if(s2 != NULL) s2->precedent = p2;
+	}
+	
 }
 
 void enveloppeConvexeBrut(vertex *v, enveloppe *e, const int nb)
@@ -221,9 +262,10 @@ void insertionLexicographique(vertex *v, enveloppe *e, const int nb)
 	double temps;
     clock_t t1, t2;
     initialiseEnveloppe(e);
-    vertex *t;
+    vertex *t, *courant;
      /*demarrage du chrono*/
 	t1 = clock();
+
 	int i;
 	File_Priorite *file;
 	file = creerFile(nb);
@@ -232,47 +274,71 @@ void insertionLexicographique(vertex *v, enveloppe *e, const int nb)
 		insererVertexFile(file, &v[i]);
 	}
 	//afficherFile(file);
+	printf("creation triangle de base\n");
 	for (i = 0; i < 3; ++i)
 	{
 		t = extremierFile(file);
-		//afficherVertex(t);
+		afficherVertex(t);
 		ajouteElement(e, t);
 	}
 
 	if(orientationPolaire(e->premier, e->premier->suivant,e->dernier) == DROITE)
-		permuteElement(e->premier, e->dernier);
+		permuteElement(e, e->premier, e->dernier);
 
+	printf("insertion des points\n");
 	while(file->nbElementsCourant > 0)
 	{
 		t = extremierFile(file);
+		afficherVertex(t);
 
-		//bouble infini car dernier = dernier ->precedent
-		while(orientationPolaire(e->dernier->precedent, e->dernier, t) 
-			== DROITE && (e->premier != e->dernier->precedent) )
+		if(t->coords[1] > e->dernier->coords[1])
 		{
-			printf("%d\n", orientationPolaire(e->dernier->precedent, e->dernier, t) );
+			printf("pijhgf\n");
+			while((e->nb > 2) && 
+				orientationPolaire(e->premier->suivant, e->premier, t) 
+			== GAUCHE)
+			{
+				printf("enleve premier sup\n");
+				enlevePremierElement(e);
+			}
+			printf("caca\n");
+			while((e->nb > 2) &&  orientationPolaire(e->dernier->precedent, e->dernier, t ) 
+				== DROITE )
+			{
+				printf("e->dernier\n");
+				afficherVertex(e->dernier);
+				printf("enleve dernier sup\n");
+				enleveDernierElement(e);
+				afficherVertex(e->dernier);
 
-			printf("enleveDernierElement\n");
-			enleveDernierElement(e);
+			}
+			ajouteElement(e, t);
+			printf("e->nb %d\n", e->nb);
+
 		}
-		//bouble infini car premier = premier->suivant
-		while(orientationPolaire(e->premier->suivant, e->premier, t ) 
-			== GAUCHE && (e->premier != e->dernier->precedent) )
+		else
 		{
-			/*afficherVertex(t);
-			afficherVertex(e->premier->suivant);
-			afficherVertex(e->premier);
-			afficherVertex(e->dernier);*/
+			printf("qsfg\n");
+			while( (e->nb > 2)  && orientationPolaire(e->premier, e->dernier, t) 
+				== GAUCHE)
+			{
+				printf("enleve dernier inf\n");
+				enleveDernierElement(e);
+			}
+			printf("azert\n");
+			while((e->nb > 2) && 
+				orientationPolaire(e->dernier->precedent, e->dernier, t ) 
+				== DROITE )
+			{
+				printf("enleve dernier inf\n");
+				enleveDernierElement(e);
+			}
+			ajouteElement(e, t);
 
-			printf("%d\n", orientationPolaire(e->premier->suivant, e->premier, t ) );
-			printf("enlevePremierElement\n");
-			enlevePremierElement(e);
-		}
-		
-		printf("ajouteElement\n");
-		ajouteElement(e, t);
+			permuteElement(e, e->dernier, e->dernier->precedent);
+			printf("e->nb %d\n", e->nb);
 
-		printf("finwhile\n");
+		}	
 	}
 
 
