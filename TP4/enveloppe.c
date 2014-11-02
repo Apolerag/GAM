@@ -14,7 +14,7 @@ void initialiseEnveloppe(enveloppe *e)
 	e->nb = 0;
 }
 
-void ajouteElement(enveloppe *e, vertex *v)
+void ajouteFin(enveloppe *e, vertex *v)
 {
 	if(e->nb == 0)
 	{
@@ -29,7 +29,25 @@ void ajouteElement(enveloppe *e, vertex *v)
 		v->precedent = e->dernier;
 		e->dernier = v;
 	}
-	e->nb ++;
+	e->nb++;
+}
+
+void ajouteDebut(enveloppe *e, vertex *v)
+{
+	if(e->nb == 0)
+	{
+		v->precedent = v->suivant = NULL;
+		e->premier = e->dernier = v;
+	}
+	else
+	{
+		e->premier->precedent = v;
+
+		v->suivant = e->premier;
+		v->precedent = NULL;
+		e->premier = v;
+	}
+	e->nb++;
 }
 
 void enlevePremierElement(enveloppe *e)
@@ -119,7 +137,7 @@ void enveloppeConvexeBrut(vertex *v, enveloppe *e, const int nb)
 	/*calcul de l'enveloppe convexe*/
 	do
 	{
-		ajouteElement(e,&v[i]);
+		ajouteFin(e,&v[i]);
 
 		surEnveloppe = 0;
 		j = 0;
@@ -176,7 +194,7 @@ void jarvis(vertex *v, enveloppe *e, const int nb)
 	t1 = clock();
 	do
 	{
-		ajouteElement(e,&v[courant]);
+		ajouteFin(e,&v[courant]);
 		suivant = (courant + 1)%nb;
 		for (i = 0; i < nb; ++i)
 		{
@@ -214,7 +232,7 @@ void graham(vertex *v, enveloppe *e, const int nb)
     /*demarrage du chrono*/
 	t1 = clock();
 	int min = minLexicographique(v, nb);
-	ajouteElement(e, &v[min]);
+	ajouteFin(e, &v[min]);
 
 	/* creation de la liste de vertices*/
 	for (i = 0; i < nb; ++i)
@@ -232,7 +250,7 @@ void graham(vertex *v, enveloppe *e, const int nb)
 	precedent = liste;
 	courant = precedent->suivant;
 	suivant = courant->suivant;
-	ajouteElement(e,precedent);
+	ajouteFin(e,precedent);
 	while (courant != NULL)
 	{
 		while((e->premier != e->dernier) && (orientationPolaire(e->dernier->precedent,e->dernier,courant) == DROITE))
@@ -241,7 +259,7 @@ void graham(vertex *v, enveloppe *e, const int nb)
 		}
 
 		suivant = courant->suivant;
-		ajouteElement(e,courant);
+		ajouteFin(e,courant);
 		courant = suivant;
 	}
 
@@ -262,7 +280,10 @@ void insertionLexicographique(vertex *v, enveloppe *e, const int nb)
 	double temps;
     clock_t t1, t2;
     initialiseEnveloppe(e);
-    vertex *t, *courant;
+    enveloppe haute, basse;
+    initialiseEnveloppe(&haute);
+    initialiseEnveloppe(&basse);
+    vertex *t;
      /*demarrage du chrono*/
 	t1 = clock();
 
@@ -275,70 +296,41 @@ void insertionLexicographique(vertex *v, enveloppe *e, const int nb)
 	}
 	//afficherFile(file);
 	printf("creation triangle de base\n");
-	for (i = 0; i < 3; ++i)
-	{
-		t = extremierFile(file);
-		afficherVertex(t);
-		ajouteElement(e, t);
-	}
+	
+	t = extremierFile(file);
+	afficherVertex(t);
+	ajouteFin(&basse,t);
+	ajouteFin(&haute,t);
+	ajouteFin(e,t);
 
-	if(orientationPolaire(e->premier, e->premier->suivant,e->dernier) == DROITE)
-		permuteElement(e, e->premier, e->dernier);
+	t = extremierFile(file);
+	afficherVertex(t);
+	ajouteFin(&basse,t);
+	ajouteFin(&haute,t);
+	ajouteFin(e,t);
 
 	printf("insertion des points\n");
 	while(file->nbElementsCourant > 0)
 	{
 		t = extremierFile(file);
-		afficherVertex(t);
+		//afficherVertex(t);
 
-		if(t->coords[1] > e->dernier->coords[1])
-		{
-			printf("pijhgf\n");
-			while((e->nb > 2) && 
-				orientationPolaire(e->premier->suivant, e->premier, t) 
+		/* enveloppe basse*/
+		/* while(basse.nb>1 && 
+		 	orientationPolaire(basse.dernier->precedent,basse.dernier,t)
 			== GAUCHE)
-			{
-				printf("enleve premier sup\n");
-				enlevePremierElement(e);
-			}
-			printf("caca\n");
-			while((e->nb > 2) &&  orientationPolaire(e->dernier->precedent, e->dernier, t ) 
-				== DROITE )
-			{
-				printf("e->dernier\n");
-				afficherVertex(e->dernier);
-				printf("enleve dernier sup\n");
-				enleveDernierElement(e);
-				afficherVertex(e->dernier);
-
-			}
-			ajouteElement(e, t);
-			printf("e->nb %d\n", e->nb);
-
-		}
-		else
-		{
-			printf("qsfg\n");
-			while( (e->nb > 2)  && orientationPolaire(e->premier, e->dernier, t) 
-				== GAUCHE)
-			{
-				printf("enleve dernier inf\n");
-				enleveDernierElement(e);
-			}
-			printf("azert\n");
-			while((e->nb > 2) && 
-				orientationPolaire(e->dernier->precedent, e->dernier, t ) 
-				== DROITE )
-			{
-				printf("enleve dernier inf\n");
-				enleveDernierElement(e);
-			}
-			ajouteElement(e, t);
-
-			permuteElement(e, e->dernier, e->dernier->precedent);
-			printf("e->nb %d\n", e->nb);
-
-		}	
+			{ 
+				enleveDernierElement(&basse);
+			} 
+			ajouteFin(&basse,t);*/
+		/* enveloppe haute*/
+			while(haute.nb > 1 && 
+		 	orientationPolaire(haute.dernier->precedent,haute.dernier,t)
+			== DROITE)
+			{ 
+				enleveDernierElement(&haute);
+			} 
+			ajouteFin(&haute,t);
 	}
 
 
@@ -349,7 +341,8 @@ void insertionLexicographique(vertex *v, enveloppe *e, const int nb)
 
     effaceFenetre();
     printf("displayEnveloppe\n");
-	displayEnveloppe(e);
+	displayEnveloppe(&basse);
+	displayEnveloppe(&haute);
 	printf("displayPoints\n");
 	displayPoints(v, nb);
 	glFlush();

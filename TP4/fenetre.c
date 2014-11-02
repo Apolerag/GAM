@@ -58,14 +58,12 @@ void displayEnveloppe(const enveloppe *e)
 	glColor3f(0.0, 0.0, 1.0);
 
 	vertex *j = e->premier;
-	printf("e->nb %d\n", e->nb);
 
-	do
+	while(j != NULL)
 	{
 		glVertex2f(j->coords[0],f.maxY - j->coords[1]);
 		j = j->suivant;
 	}
-	while(j != NULL);
 	glEnd();
 
 }

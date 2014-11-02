@@ -19,7 +19,9 @@ void initialiseEnveloppe(enveloppe *e);
 * \arg e l'enveloppe
 * \arg v le vertex 
 */
-void ajouteElement(enveloppe *e, vertex *v);
+void ajouteFin(enveloppe *e, vertex *v);
+
+void ajouteDebut(enveloppe *e, vertex *v);
 
 /*! enleve le dernier vertex de la liste de l'enveloppe
 * \arg e l'enveloppe
