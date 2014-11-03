@@ -101,16 +101,3 @@ void echangeCase(File_Priorite * f, const int i, const int j)
 	f->file[i] = f->file[j];
 	f->file[j] = temp;
 }
-
-Ordre ordreLexicographiqueVertex(const vertex * v1, const vertex * v2)
-{
-	int i;
-	for(i=0; i<DIM; i++)
-	{
-		if(v1->coords[i] < v2->coords[i])
-			return INFERIEUR ;
-		else if(v1->coords[i] > v2->coords[i])
-			return SUPERIEUR ;
-	}
-	return EGAUX ;
-}

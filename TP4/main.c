@@ -36,30 +36,56 @@ int main(int argc, char **argv)
 	int c;
 	int nbPoints = 50;
 	vertex *v = NULL;
-	enveloppe e1,e2,e3,e4;
+	enveloppe e1,e2,e3,e4,e5;
 	initialiseEnveloppe(&e1);
 	initialiseEnveloppe(&e2);
 	initialiseEnveloppe(&e3);
 	initialiseEnveloppe(&e4);
+	initialiseEnveloppe(&e5);
+	int jar = 0, lex = 0, gra = 0, di = 0, bru = 0;
 	
 	opterr = 0;
-	while ((c = getopt(argc, argv, "n:")) != EOF)
+	while ((c = getopt(argc, argv, "bBjJgGlLdDn:")) != EOF)
 	{
 		switch (c)
-		{	
+		{
+			case 'b': 
+			case 'B': 
+				bru = 1;
+				break;
+			case 'j': 
+			case 'J': 
+				jar = 1;
+				break;
+			case 'g': 
+			case 'G': 
+				gra = 1;
+				break;
+			case 'L': 
+			case 'l': 
+				lex = 1;
+				break;
+			case 'd': 
+			case 'D': 
+				di = 1;
+				break;
 			case 'n': 
 				if ((sscanf(optarg, "%d", &nbPoints) != 1) || nbPoints <= 0)
 					nbPoints = 50;
 				break;
-			case 'h': 
-			case '?': 
+			case 'h':  
+			default :
+				printf("-b ou -B Brute\n");
+				printf("-j ou -J jarvis\n");
+				printf("-g ou -G Graham\n");
+				printf("-l ou -L lexico\n");
+				printf("-d ou -D divideAndConquer\n");
+				printf("-n le nombre de vertex (50 par défaut)\n");
+				printf("-h l'aide d'utilisation\n");
 				return EXIT_SUCCESS;  
-				break;
-			default : printf("Shouldn't be here, really...\n");
 				break;
 		}
 	}
-
 	glutInit(&argc, argv);  
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);  
 	glutInitWindowPosition(5,5);  
@@ -72,11 +98,11 @@ int main(int argc, char **argv)
 	ALLOUER(v,nbPoints);
 	selectPoints (v, nbPoints);
 
-	//jarvis(v, &e1,nbPoints);
-	//enveloppeConvexeBrut(v, &e2,nbPoints);
-	//graham(v, &e3,nbPoints);
-	insertionLexicographique( v, &e4, nbPoints);
-	printf("fin\n");
+	if(jar) jarvis(v, &e1,nbPoints);
+	if(bru)enveloppeConvexeBrut(v, &e2,nbPoints);
+	if(gra)graham(v, &e3,nbPoints);
+	if(lex)insertionLexicographique( v, &e4, nbPoints);
+	if(di)printf("ne fonctionne pas\n"); //divideAndConquer( v, &e5, nbPoints);
 
 	glutMainLoop(); 
 	clearFenetre(v,nbPoints);

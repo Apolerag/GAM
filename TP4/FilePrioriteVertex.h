@@ -19,11 +19,6 @@ typedef struct {
    int nbElementsCourant;
 } File_Priorite;
 
-typedef enum {
-	INFERIEUR = -1,
-	EGAUX = 0,
-	SUPERIEUR = 1
-} Ordre;
 
 /*! initialise la file par defaut*/
 File_Priorite * creerFile(const int nb_elements);
@@ -42,10 +37,5 @@ vertex* extremierFile(File_Priorite * f);
 
 /*! échange le contenu des cases i et j de la file*/
 void echangeCase(File_Priorite * f, const int i, const int j);
-
-/*! compare lexicographiquement deux vertex - retourne INFERIEUR si le premier est 
-	inférieur lexicographiquement au deuxième, EGAUX si les deux vertexs sont 
-	confondus, SUPERIEUR sinon */
-Ordre ordreLexicographiqueVertex(const vertex * v1, const vertex * v2);
 
 #endif

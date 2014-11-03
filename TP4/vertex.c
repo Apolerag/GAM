@@ -67,6 +67,30 @@ void afficherVertex(const vertex * v)
 	printf("\n");
 }
 
+Ordre ordreLexicographiqueVertex(const vertex * v1, const vertex * v2)
+{
+	int i;
+	for(i=0; i<DIM; i++)
+	{
+		if(v1->coords[i] < v2->coords[i])
+			return INFERIEUR ;
+		else if(v1->coords[i] > v2->coords[i])
+			return SUPERIEUR ;
+	}
+	return EGAUX ;
+}
+
+void afficherListe(vertex *v)
+{
+	vertex *j = v;
+	while (j != NULL)
+	{
+		printf("%lf, %lf \n",j->coords[0], j->coords[1]);
+		j = j->suivant;
+	}
+
+}
+
 /* tri fusion de la liste*/
 vertex* separer(vertex *liste)
 {
@@ -81,7 +105,6 @@ vertex* separer(vertex *liste)
 		return m;
 	}
 }
-
 vertex* fusion(vertex *lg,vertex *ld, const vertex *origin)
 {
 	vertex *retour = NULL;
@@ -93,7 +116,6 @@ vertex* fusion(vertex *lg,vertex *ld, const vertex *origin)
 	{
 		return lg;
 	}
-
 	if(orientationPolaire(origin, lg,ld ) == DROITE)
 	{
 		retour = ld;
@@ -104,9 +126,9 @@ vertex* fusion(vertex *lg,vertex *ld, const vertex *origin)
 		retour = lg;
 		lg = lg->suivant;
 	}
+	
 	vertex *courant = retour;
 	retour->suivant = NULL;
-
 	while(lg != NULL && ld != NULL)
 	{
 		if(orientationPolaire(origin, lg,ld) == DROITE)
@@ -121,18 +143,15 @@ vertex* fusion(vertex *lg,vertex *ld, const vertex *origin)
 		}
 		courant = courant->suivant;
 	}
-
 	if(lg != NULL) courant->suivant = lg;
 	else courant->suivant = ld;
-	
 	return retour;
 }
 
 vertex* trier(vertex* l, const vertex *origin)
 {
 	vertex * m;
-
-	if (l != NULL && l->suivant != NULL) 
+	if (l != NULL && l->suivant != NULL)
 	{
 		m = separer(l);
 		l = trier(l,origin);
@@ -142,25 +161,45 @@ vertex* trier(vertex* l, const vertex *origin)
 	return l;
 }
 
-void afficherListe(vertex *v)
-{
-	vertex *j = v;
-	while (j != NULL)
-	{
-		printf("%lf, %lf \n",j->coords[0], j->coords[1]);
-		j = j->suivant;
-	}
+/*tri Partition*/
 
+void echanger(vertex *v ,const int i,const int j)
+{ 
+	vertex tmp;
+	tmp=v[i];
+	v[i]=v[j];
+	v[j]=tmp;
 }
 
-double distanceVertex(vertex *v1, vertex *v2)
-{
-	int i;
-	double retour = 0;
-	for(i=0; i<DIM; i++)
-	{
-		retour += pow((v1->coords[i] - v2->coords[i]),2);
-		
+int partition(vertex *v, const int deb, const int fin)
+{ 
+	int compt = deb; 
+	vertex pivot = v[deb]; 
+	int i; 
+	for (i = deb+1; i <= fin; i++)
+	{ 
+		if (ordreLexicographiqueVertex(&v[i], &pivot) == INFERIEUR)
+		{
+			compt++;
+			echanger(v,compt,i);
+		}
+	
 	}
-	return sqrt(retour);
+	echanger(v,compt,deb); 
+	return compt;
+}
+
+void triPartitionBis(vertex *v,const int debut,const int fin)
+{ 
+	if (debut<fin)
+	{ 
+		int pivot = partition(v,debut,fin);
+		triPartitionBis(v, debut, pivot-1);
+		triPartitionBis(v, pivot+1, fin);
+	}
+}
+
+void triPartition(vertex *v, const int nb)
+{
+	triPartitionBis(v, 0, nb-1); 
 }

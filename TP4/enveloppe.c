@@ -18,14 +18,14 @@ void ajouteFin(enveloppe *e, vertex *v)
 {
 	if(e->nb == 0)
 	{
-		v->precedent = v->suivant = NULL;
+		v->precedent = v->suivant = v;
 		e->premier = e->dernier = v;
 	}
 	else
 	{
 		e->dernier->suivant = v;
 
-		v->suivant = NULL;
+		v->suivant = e->premier;
 		v->precedent = e->dernier;
 		e->dernier = v;
 	}
@@ -36,7 +36,7 @@ void ajouteDebut(enveloppe *e, vertex *v)
 {
 	if(e->nb == 0)
 	{
-		v->precedent = v->suivant = NULL;
+		v->precedent = v->suivant = v;
 		e->premier = e->dernier = v;
 	}
 	else
@@ -44,7 +44,7 @@ void ajouteDebut(enveloppe *e, vertex *v)
 		e->premier->precedent = v;
 
 		v->suivant = e->premier;
-		v->precedent = NULL;
+		v->precedent = e->dernier;
 		e->premier = v;
 	}
 	e->nb++;
@@ -60,8 +60,8 @@ void enlevePremierElement(enveloppe *e)
 	else
 	{
 		vertex *t = e->premier->suivant;
-		t->precedent = NULL;
-		e->premier->suivant = NULL;
+		t->precedent = e->dernier;
+		e->premier->suivant = e->premier->precedent = NULL;
 		e->premier = t;
 
 		e->nb --;
@@ -78,43 +78,52 @@ void enleveDernierElement(enveloppe *e)
 	else
 	{
 		vertex *t = e->dernier->precedent;
-		t->suivant = NULL;
-		e->dernier->precedent = NULL;
+		t->suivant = e->premier;
+		e->dernier->precedent = e->dernier->suivant = NULL;
 		e->dernier = t;
 
 		e->nb --;
 	}
 }
 
-void permuteElement(enveloppe *e, vertex *v1, vertex *v2)
+vertex *minEnveloppe(enveloppe *e)
 {
-	if(e->nb == 2)
+	if(e->nb == 0) return NULL;
+	if(e->nb == 1) return e->premier;
+
+	vertex * min = e->premier;
+	vertex *courant = e->premier->suivant;
+
+	while(courant != e->dernier)
 	{
-		vertex *t = e->premier;
-		e->premier = e->dernier;
-		e->dernier = t;
-
-		e->premier->suivant = e->dernier;
-		e->dernier->precedent = e->premier;
-
-		e->premier->precedent = e->dernier->suivant = NULL;
+		if(ordreLexicographiqueVertex(courant, min) == INFERIEUR)
+		{
+			min = courant;
+		}
+		courant = courant->suivant;
 	}
-	else
+
+	return min;
+}
+
+vertex *maxEnveloppe(enveloppe *e)
+{
+	if(e->nb == 0) return NULL;
+	if(e->nb == 1) return e->premier;
+
+	vertex * min = e->premier;
+	vertex *courant = e->premier->suivant;
+
+	while(courant != e->dernier)
 	{
-		vertex *p1 = v1->precedent, *s1 = v1->suivant;
-		vertex *p2 = v2->precedent, *s2 = v2->suivant;
-
-		v1->precedent = p2;
-		v2->precedent = p1;
-		v1->suivant = s2;
-		v2->suivant = s1;
-
-		if(p1 != NULL) p1->suivant = v2;
-		if(p2 != NULL) p2->suivant = v1;
-		if(s1 != NULL) s1->precedent = v2;
-		if(s2 != NULL) s2->precedent = p2;
+		if(ordreLexicographiqueVertex(courant, min) == SUPERIEUR)
+		{
+			min = courant;
+		}
+		courant = courant->suivant;
 	}
-	
+
+	return min;
 }
 
 void enveloppeConvexeBrut(vertex *v, enveloppe *e, const int nb)
@@ -222,55 +231,49 @@ void jarvis(vertex *v, enveloppe *e, const int nb)
 void graham(vertex *v, enveloppe *e, const int nb)
 {
 	double temps;
-    clock_t t1, t2;
-    initialiseEnveloppe(e);
-
-    int i;
+	clock_t t1, t2;
+	initialiseEnveloppe(e);
+	int i;
 	vertex *liste = NULL;
 	vertex *courant = NULL, *suivant = NULL, *precedent = NULL;
 
-    /*demarrage du chrono*/
+	/*demarrage du chrono*/
 	t1 = clock();
+
 	int min = minLexicographique(v, nb);
 	ajouteFin(e, &v[min]);
 
 	/* creation de la liste de vertices*/
 	for (i = 0; i < nb; ++i)
 	{
-		if(i != min) 
+		if(i != min)
 		{
-  			v[i].suivant = liste;
-  			liste = &v[i]; 
+			v[i].suivant = liste;
+			liste = &v[i];
 		}
 	}
-	
-	//printf("tri fusion\n");
-	liste = trier(liste, &v[min]);
 
+	liste = trier(liste, &v[min]);
 	precedent = liste;
 	courant = precedent->suivant;
 	suivant = courant->suivant;
 	ajouteFin(e,precedent);
+
 	while (courant != NULL)
 	{
 		while((e->premier != e->dernier) && (orientationPolaire(e->dernier->precedent,e->dernier,courant) == DROITE))
 		{
-        	enleveDernierElement(e);
+			enleveDernierElement(e);
 		}
-
 		suivant = courant->suivant;
 		ajouteFin(e,courant);
 		courant = suivant;
 	}
-
 	t2 = clock();
-    temps = (double)(t2-t1)/CLOCKS_PER_SEC;
-    printf("durée graham : %lf\n", temps);
-
-    effaceFenetre();
-    printf("displayEnveloppe\n");
+	temps = (double)(t2-t1)/CLOCKS_PER_SEC;
+	printf("durée graham : %lf\n", temps);
+	effaceFenetre();
 	displayEnveloppe(e);
-	printf("displayPoints\n");
 	displayPoints(v, nb);
 	glFlush();
 }
@@ -280,7 +283,6 @@ void insertionLexicographique(vertex *v, enveloppe *e, const int nb)
 	double temps;
     clock_t t1, t2;
     initialiseEnveloppe(e);
-    vertex *t;
     vertex **bas, **haut;
     ALLOUER(bas,nb);
     ALLOUER(haut,nb);
@@ -289,36 +291,25 @@ void insertionLexicographique(vertex *v, enveloppe *e, const int nb)
 	t1 = clock();
 
 	int i,h,b;
-	File_Priorite *file;
-	file = creerFile(nb);
-	for ( i = 0; i < nb; ++i)
-	{
-		insererVertexFile(file, &v[i]);
-	}
-	//afficherFile(file);
+	triPartition(v, nb);
+
 	printf("creation triangle de base\n");
 	
-	t = extremierFile(file);
-	afficherVertex(t);
-	bas[0] = t;
-	haut[0] = t;
-	//ajouteFin(&haute,t);
-	//ajouteFin(e,t);
+	bas[0] = &v[0];
+	haut[0] = &v[0];
 
-	t = extremierFile(file);
-	afficherVertex(t);
-	bas[1] = t;
-	haut[1] = t;;
-	//ajouteFin(e,t);
+	bas[1] = &v[1];
+	haut[1] = &v[1];;
+
 	h = b = 1;
+	i = 2;
 	printf("insertion des points\n");
-	while(file->nbElementsCourant > 0)
+	for(i = 2; i < nb; i++)
 	{
 		b++;h++;
-		t = extremierFile(file);
 		//afficherVertex(t);
-		bas[b] = t;
-		haut[h] = t;
+		bas[b] = &v[i];
+		haut[h] = &v[i];
 		/* enveloppe basse*/
 		while(b > 1 && 
 		 	orientationPolaire(bas[b],bas[b-2],bas[b-1])
@@ -337,6 +328,7 @@ void insertionLexicographique(vertex *v, enveloppe *e, const int nb)
 				h--;
 			} 
 	}
+
 	printf("b %d, h %d\n",b,h );
 	for (i = 0; i < b; ++i)
 	{
@@ -359,4 +351,157 @@ void insertionLexicographique(vertex *v, enveloppe *e, const int nb)
 
 	free(haut);
 	free(bas);
+}
+
+void divideAndConquer(vertex *v, enveloppe *e, const int nb)
+{
+	double temps;
+	clock_t t1, t2;
+	/*demarrage du chrono*/
+	t1 = clock();
+
+	triPartition(v, nb);
+	*e = fusionEnveloppe(diviser(v, 0, nb/2), diviser(v, nb/2, nb));
+
+	t2 = clock();
+	temps = (double)(t2-t1)/CLOCKS_PER_SEC;
+
+	printf("durée divideAndConquer : %lf\n", temps);
+	effaceFenetre();
+	displayEnveloppe(e);
+	displayPoints(v, nb);
+	glFlush();
+}
+
+enveloppe diviser(vertex *v, int deb, int fin)
+{
+	assert(deb <= fin);
+	enveloppe e;
+	int i;
+	if( fin - deb <= 3)
+	{
+		printf("cas d'arret\n");
+		initialiseEnveloppe(&e);
+		for (i = deb; i < fin; ++i)
+		{
+			ajouteFin(&e, &v[i]);
+		}
+	}
+	else e = fusionEnveloppe(diviser(v, deb, (fin+deb)/2), diviser(v, (fin+deb)/2, fin));
+	return e;
+}
+
+enveloppe fusionEnveloppe(enveloppe g, enveloppe d)
+{
+	printf("debut fusion\n");
+	enveloppe e;
+	initialiseEnveloppe(&e);
+
+	printf("calcul g,d\n");
+	vertex *gd = maxEnveloppe(&g);
+	printf("min\n");
+	vertex *dg = minEnveloppe(&d); 
+	
+	vertex *hg = NULL, *bg = NULL, *hd = NULL, *bd = NULL; 
+
+	/*fusion haute*/
+	printf("fusion haute\n");
+	vertex *courantG = gd;
+	vertex *courantD = dg;
+	vertex *suivantG = courantG->suivant;
+	vertex *suivantD = courantD->precedent;
+	printf("while 1\n");
+	while(orientationPolaire(courantG,courantD, suivantD) == GAUCHE ||
+		orientationPolaire(suivantG,courantG, courantD) == GAUCHE )
+	{
+		printf("while 1.1 \n");
+		while(orientationPolaire(courantG,courantD, suivantD) == GAUCHE)
+		{
+			//afficherVertex(courantD);
+			courantD = suivantD;
+			suivantD = suivantD->precedent;
+			if(courantD == dg)
+			{
+				courantD = maxEnveloppe(&d);
+				suivantD = courantD;
+				break;
+			}
+		}
+		printf("while 1.2 \n");
+		while(orientationPolaire(suivantG,courantG, courantD) == GAUCHE)
+		{
+			courantG = suivantG;
+			suivantG = suivantG->suivant;
+			if(courantG == gd)
+			{
+				courantG = minEnveloppe(&g);
+				suivantG = courantG;
+				break;
+			}
+		}
+	}
+	hg = courantG; hd = courantD;
+
+	/*fusion basse*/
+	courantG = gd;
+	courantD = dg;
+	suivantG = courantG->precedent;
+	suivantD = courantD->suivant;
+
+	while(orientationPolaire(courantG,courantD, suivantD) == DROITE ||
+		orientationPolaire(suivantG,courantG, courantD) == DROITE )
+	{
+		printf("while 2.1 \n");
+		while(orientationPolaire(courantG,courantD, suivantD) == DROITE)
+		{
+			printf("efvs\n");
+			courantD = suivantD;
+			suivantD = suivantD->suivant;
+			if(courantD == dg)
+			{
+				courantD = maxEnveloppe(&d);
+				suivantD = courantD;
+				break;
+			}
+		}
+		printf("fin while 2.1\n");
+		while(orientationPolaire(suivantG,courantG, courantD) == DROITE)
+		{
+			courantG = suivantG;
+			suivantG = suivantG->precedent;
+			if(courantG == gd)
+			{
+				courantG = minEnveloppe(&g);
+				suivantG = courantG;
+				break;
+			}
+		}
+	}
+	printf("fin while 2 \n");
+	bg = courantG; bd = courantD;
+
+	/*on recolle les morceaux*/
+
+	bg->suivant = bd;
+	hd->suivant = hg;
+
+	vertex * courant = g.premier;
+
+	printf("recolle\n");
+	printf("g->nb %d\n", g.nb);
+	while(courant != g.premier)
+	{
+		//afficherVertex(courant);
+		/*if(courant == bg) printf("bg\n");
+		if(courant == bd) printf("bd\n");
+		if(courant == hd) printf("hd\n");
+		if(courant == hg) printf("hg\n");*/
+		if(courant == g.dernier) printf("dernier\n");
+		vertex * suivant = courant->suivant;
+		ajouteFin(&e, courant);
+		courant = suivant;	
+	}
+	printf(" return\n");
+
+	return e;
 }

@@ -59,7 +59,7 @@ void displayEnveloppe(const enveloppe *e)
 
 	vertex *j = e->premier;
 
-	while(j != NULL)
+	while(j != e->dernier)
 	{
 		glVertex2f(j->coords[0],f.maxY - j->coords[1]);
 		j = j->suivant;

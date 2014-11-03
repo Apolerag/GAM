@@ -28,6 +28,12 @@ typedef enum
 	POLYGONE = 2
 } Position;
 
+typedef enum {
+	INFERIEUR = -1,
+	EGAUX = 0,
+	SUPERIEUR = 1
+} Ordre;
+
 /*! Structure pour representer un point. */
 typedef struct _vertex
 {
@@ -71,8 +77,12 @@ Position positionPointTriangle(const vertex *A, const vertex *B,
 /*! affiche les informations d'un vertex*/
 void afficherVertex(const vertex * v);
 
-/* tir par fusion*/
+/*! compare lexicographiquement deux vertex - retourne INFERIEUR si le premier est 
+	inférieur lexicographiquement au deuxième, EGAUX si les deux vertexs sont 
+	confondus, SUPERIEUR sinon */
+Ordre ordreLexicographiqueVertex(const vertex * v1, const vertex * v2);
 
+/* tir par fusion*/
 vertex* Separer(vertex *liste);
 
 vertex* fusion(vertex *lg,vertex *ld, const vertex* origin);
@@ -81,6 +91,12 @@ void afficherListe(vertex *v);
 
 vertex* trier(vertex* l, const vertex* origin);
 
-double distanceVertex(vertex *v1, vertex *v2);
+void echanger(vertex *v ,const int i,const int j);
+
+int partition(vertex *v, const int deb, const int fin);
+
+void triPartitionBis(vertex *v,const int debut,const int fin);
+
+void triPartition(vertex *v, const int n);
 
 #endif
