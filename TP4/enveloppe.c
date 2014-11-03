@@ -280,14 +280,15 @@ void insertionLexicographique(vertex *v, enveloppe *e, const int nb)
 	double temps;
     clock_t t1, t2;
     initialiseEnveloppe(e);
-    enveloppe haute, basse;
-    initialiseEnveloppe(&haute);
-    initialiseEnveloppe(&basse);
     vertex *t;
+    vertex **bas, **haut;
+    ALLOUER(bas,nb);
+    ALLOUER(haut,nb);
+
      /*demarrage du chrono*/
 	t1 = clock();
 
-	int i;
+	int i,h,b;
 	File_Priorite *file;
 	file = creerFile(nb);
 	for ( i = 0; i < nb; ++i)
@@ -299,51 +300,63 @@ void insertionLexicographique(vertex *v, enveloppe *e, const int nb)
 	
 	t = extremierFile(file);
 	afficherVertex(t);
-	ajouteFin(&basse,t);
-	ajouteFin(&haute,t);
-	ajouteFin(e,t);
+	bas[0] = t;
+	haut[0] = t;
+	//ajouteFin(&haute,t);
+	//ajouteFin(e,t);
 
 	t = extremierFile(file);
 	afficherVertex(t);
-	ajouteFin(&basse,t);
-	ajouteFin(&haute,t);
-	ajouteFin(e,t);
-
+	bas[1] = t;
+	haut[1] = t;;
+	//ajouteFin(e,t);
+	h = b = 1;
 	printf("insertion des points\n");
 	while(file->nbElementsCourant > 0)
 	{
+		b++;h++;
 		t = extremierFile(file);
 		//afficherVertex(t);
-
+		bas[b] = t;
+		haut[h] = t;
 		/* enveloppe basse*/
-		/* while(basse.nb>1 && 
-		 	orientationPolaire(basse.dernier->precedent,basse.dernier,t)
+		while(b > 1 && 
+		 	orientationPolaire(bas[b],bas[b-2],bas[b-1])
 			== GAUCHE)
 			{ 
-				enleveDernierElement(&basse);
+				bas[b-1] = bas[b];
+				b--;
 			} 
-			ajouteFin(&basse,t);*/
+		
 		/* enveloppe haute*/
-			while(haute.nb > 1 && 
-		 	orientationPolaire(haute.dernier->precedent,haute.dernier,t)
+			while(h > 1 && 
+		 	orientationPolaire(haut[h],haut[h-2],haut[h-1])
 			== DROITE)
 			{ 
-				enleveDernierElement(&haute);
+				haut[h-1] = haut[h];
+				h--;
 			} 
-			ajouteFin(&haute,t);
 	}
-
-
-
+	printf("b %d, h %d\n",b,h );
+	for (i = 0; i < b; ++i)
+	{
+		ajouteFin(e,bas[i]);
+	}
+	for (i = h; i > 0; --i)
+	{
+		ajouteFin(e,haut[i]);
+	}
 	t2 = clock();
     temps = (double)(t2-t1)/CLOCKS_PER_SEC;
     printf("durée insertionLexicographique : %lf\n", temps);
 
     effaceFenetre();
     printf("displayEnveloppe\n");
-	displayEnveloppe(&basse);
-	displayEnveloppe(&haute);
+	displayEnveloppe(e);
 	printf("displayPoints\n");
 	displayPoints(v, nb);
 	glFlush();
+
+	free(haut);
+	free(bas);
 }
